@@ -9,6 +9,10 @@ const int MAX_GEN = 6000;
 
 const int nPtBins = 10;
 Float_t ptBins[nPtBins+1] = {2, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
+const int nDphiBins = 10;
+Float_t minDphi = 0;
+Float_t maxDphi = M_PI;
+Float_t dphiBins[nDphiBins+1];
 const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
 const int nhist = 2;
