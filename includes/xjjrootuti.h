@@ -7,13 +7,13 @@ namespace xjjrootuti
 {
   void setgstyle();
   void sethempty(TH2F* hempty, float xoffset=0, float yoffset=0);
-  void setth1(TH1F* hempty, float xoffset=0, float yoffset=0);
-  void setth1(TH1D* hempty, float xoffset=0, float yoffset=0);
-  void settgr(TGraph* gr, float xoffset=0, float yoffset=0);
-  void settgr(TGraphErrors* gr, float xoffset=0, float yoffset=0);
-  void settgr(TGraphAsymmErrors* gr, float xoffset=0, float yoffset=0);
+  template <class T>
+  void setthgr(T* hempty, float xoffset=0, float yoffset=0);
+  template <class T>
+  void setthgrstyle(T* h, Color_t mlcolor, Style_t mstyle=-1, Size_t msize=-1, Style_t lstyle=-1, Width_t lwidth=-1);
   void drawCMS(TString collision);
   void settex(TLatex* tex, Float_t size=0.04, Int_t align=12);
+  void settexndraw(TLatex* tex, Float_t size=0.04, Int_t align=12);
   void setleg(TLegend* leg, Float_t size=0.04);
   void setbranchaddress(TTree* nt, const char* bname, void* addr);
 }
@@ -49,7 +49,8 @@ void xjjrootuti::sethempty(TH2F* hempty, float xoffset/*=0*/, float yoffset/*=0*
   hempty->SetStats(0);
 }
 
-void xjjrootuti::setth1(TH1F* hempty, float xoffset/*=0*/, float yoffset/*=0*/)
+template <class T>
+void xjjrootuti::setthgr(T* hempty, float xoffset/*=0*/, float yoffset/*=0*/)
 {
   hempty->GetXaxis()->CenterTitle();
   hempty->GetYaxis()->CenterTitle();
@@ -70,85 +71,15 @@ void xjjrootuti::setth1(TH1F* hempty, float xoffset/*=0*/, float yoffset/*=0*/)
   hempty->SetLineColor(kBlack);
 }
 
-void xjjrootuti::setth1(TH1D* hempty, float xoffset/*=0*/, float yoffset/*=0*/)
+template <class T>
+void xjjrootuti::setthgrstyle(T* h, Color_t mlcolor, Style_t mstyle/*=-1*/, Size_t msize/*=-1*/, Style_t lstyle/*=-1*/, Width_t lwidth/*=-1*/)
 {
-  hempty->GetXaxis()->CenterTitle();
-  hempty->GetYaxis()->CenterTitle();
-  hempty->GetXaxis()->SetTitleOffset(1.10+xoffset);
-  hempty->GetYaxis()->SetTitleOffset(1.30+yoffset);
-  hempty->GetXaxis()->SetTitleSize(0.05);
-  hempty->GetYaxis()->SetTitleSize(0.05);
-  hempty->GetXaxis()->SetTitleFont(42);
-  hempty->GetYaxis()->SetTitleFont(42);
-  hempty->GetXaxis()->SetLabelFont(42);
-  hempty->GetYaxis()->SetLabelFont(42);
-  hempty->GetXaxis()->SetLabelSize(0.045);
-  hempty->GetYaxis()->SetLabelSize(0.045);
-  hempty->SetStats(0);
-  hempty->SetMarkerStyle(20);
-  hempty->SetMarkerSize(1.1);
-  hempty->SetMarkerColor(kBlack);
-  hempty->SetLineColor(kBlack);
-}
-
-void xjjrootuti::settgr(TGraph* gr, float xoffset/*=0*/, float yoffset/*=0*/)
-{
-  gr->GetXaxis()->CenterTitle();
-  gr->GetYaxis()->CenterTitle();
-  gr->GetXaxis()->SetTitleOffset(1.10+xoffset);
-  gr->GetYaxis()->SetTitleOffset(1.30+yoffset);
-  gr->GetXaxis()->SetTitleSize(0.05);
-  gr->GetYaxis()->SetTitleSize(0.05);
-  gr->GetXaxis()->SetTitleFont(42);
-  gr->GetYaxis()->SetTitleFont(42);
-  gr->GetXaxis()->SetLabelFont(42);
-  gr->GetYaxis()->SetLabelFont(42);
-  gr->GetXaxis()->SetLabelSize(0.045);
-  gr->GetYaxis()->SetLabelSize(0.045);
-  gr->SetMarkerStyle(20);
-  gr->SetMarkerSize(1.1);
-  gr->SetMarkerColor(kBlack);
-  gr->SetLineColor(kBlack);
-}
-
-void xjjrootuti::settgr(TGraphErrors* gr, float xoffset/*=0*/, float yoffset/*=0*/)
-{
-  gr->GetXaxis()->CenterTitle();
-  gr->GetYaxis()->CenterTitle();
-  gr->GetXaxis()->SetTitleOffset(1.10+xoffset);
-  gr->GetYaxis()->SetTitleOffset(1.30+yoffset);
-  gr->GetXaxis()->SetTitleSize(0.05);
-  gr->GetYaxis()->SetTitleSize(0.05);
-  gr->GetXaxis()->SetTitleFont(42);
-  gr->GetYaxis()->SetTitleFont(42);
-  gr->GetXaxis()->SetLabelFont(42);
-  gr->GetYaxis()->SetLabelFont(42);
-  gr->GetXaxis()->SetLabelSize(0.045);
-  gr->GetYaxis()->SetLabelSize(0.045);
-  gr->SetMarkerStyle(20);
-  gr->SetMarkerSize(1.1);
-  gr->SetMarkerColor(kBlack);
-  gr->SetLineColor(kBlack);
-}
-
-void xjjrootuti::settgr(TGraphAsymmErrors* gr, float xoffset/*=0*/, float yoffset/*=0*/)
-{
-  gr->GetXaxis()->CenterTitle();
-  gr->GetYaxis()->CenterTitle();
-  gr->GetXaxis()->SetTitleOffset(1.10+xoffset);
-  gr->GetYaxis()->SetTitleOffset(1.30+yoffset);
-  gr->GetXaxis()->SetTitleSize(0.05);
-  gr->GetYaxis()->SetTitleSize(0.05);
-  gr->GetXaxis()->SetTitleFont(42);
-  gr->GetYaxis()->SetTitleFont(42);
-  gr->GetXaxis()->SetLabelFont(42);
-  gr->GetYaxis()->SetLabelFont(42);
-  gr->GetXaxis()->SetLabelSize(0.045);
-  gr->GetYaxis()->SetLabelSize(0.045);
-  gr->SetMarkerStyle(20);
-  gr->SetMarkerSize(1.1);
-  gr->SetMarkerColor(kBlack);
-  gr->SetLineColor(kBlack);
+  h->SetMarkerColor(mlcolor);
+  h->SetLineColor(mlcolor);
+  if(mstyle>=0) h->SetMarkerStyle(mstyle);
+  if(lstyle>=0) h->SetLineStyle(lstyle);
+  if(msize>=0)  h->SetMarkerSize(msize);
+  if(lwidth>=0) h->SetLineWidth(lwidth);
 }
 
 void xjjrootuti::drawCMS(TString collision)
@@ -175,10 +106,17 @@ void xjjrootuti::settex(TLatex* tex, Float_t size/*=0.04*/, Int_t align/*=12*/)
   tex->SetTextSize(size);
 }
 
+void xjjrootuti::settexndraw(TLatex* tex, Float_t size/*=0.04*/, Int_t align/*=12*/)
+{
+  xjjrootuti::settex(tex, size, align);
+  tex->Draw();
+}
+
 void xjjrootuti::setleg(TLegend* leg, Float_t size/*=0.04*/)
 {
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
+  leg->SetTextFont(42);
   leg->SetTextSize(size);
 }
 
@@ -227,13 +165,6 @@ TH1F* functionHist(TF1* f, TH1F* h, TString fHistname)
   return hF;
 }
 
-TLegend* myLegend(Double_t x1, Double_t y1, Double_t x2, Double_t y2)
-{
-  TLegend* leg = new TLegend(x1,y1,x2,y2);
-  leg->SetBorderSize(0);
-  leg->SetFillStyle(0);
-  return leg; 
-}
 */
 
 

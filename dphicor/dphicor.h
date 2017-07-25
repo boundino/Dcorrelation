@@ -1,22 +1,24 @@
 #include "../includes/xjjuti.h"
 #include "../includes/xjjrootuti.h"
 #include "../includes/readD.h"
+#include "../includes/fit.h"
 
 const int MAX_XB = 20000;
 const int MAX_GEN = 6000;
 
 //
-
 const int nPtBins = 10;
 Float_t ptBins[nPtBins+1] = {2, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
+const int nDphiBins_fine = 50;
 const int nDphiBins = 10;
 Float_t minDphi = 0;
 Float_t maxDphi = M_PI;
 Float_t dphiBins[nDphiBins+1];
 const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
-const int nhist = 2;
-TString histname[nhist] = {"hdphi", "hdphi_signal"};
+const int nhist = 4;
+TString histname[nhist] = {"hdphi_all_all", "hdphi_signal_signal", "hdphi_all_signal", "hdphi_signal_all"};
+Color_t hcolor[nhist]   = {kBlack,          kRed+1,                kAzure-6,           kMagenta+3};
 
 std::vector<TString> cutval_list_skim_pp = {"pBeamScrapingFilter", "pPAprimaryVertexFilter"};
 std::vector<TString> cutval_list_skim_PbPb = {"pclusterCompatibilityFilter", "pprimaryVertexFilter", "phfCoincFilter3"};
@@ -32,8 +34,7 @@ Float_t cutval_list_Dchi2cl[nCoBins][nPtBins]  = {{0.161, 0.197, 0.141, 0.172, 0
 TString cutval_list_hlt[nCoBins] = {"HLT_DmesonPPTrackingGlobal_Dpt15_v1", "HLT_HIDmesonHITrackingGlobal_Dpt20_v1"};
 std::vector<TString> cutval_list_skim[nCoBins] = {cutval_list_skim_pp, cutval_list_skim_PbPb};
 
-
-//
+/* ----- */
 Float_t cutval_trkPt;
 Float_t cutval_trkEta;
 Float_t cutval_trkPtErr;
