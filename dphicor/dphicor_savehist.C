@@ -23,7 +23,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
 
   int nentries = ntDkpi->GetEntries();
   TH1D** hdphi = new TH1D*[nhist];
-  for(int l=0;l<nhist;l++) hdphi[l] = new TH1D(histname[l], ";#Delta#phi;Entries", 50, 0, 3.2);
+  for(int l=0;l<nhist;l++) hdphi[l] = new TH1D(histname[l], ";#Delta#phi;Entries", 50, 0, M_PI);
   for(int i=0;i<nentries;i++)
     {
       if(i%10000==0) xjjuti::progressbar(i, nentries);
