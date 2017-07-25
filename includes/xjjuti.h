@@ -20,6 +20,7 @@ namespace xjjuti
   std::string number_remove_zero(float param_);
   std::string number_remove_zero(double param_);
   void progressbar(int index_, int total_, int morespace_=0);
+  void progressbar_summary(int total_);
 }
 
 //
@@ -115,6 +116,11 @@ std::string xjjuti::number_remove_zero(double param_)
 void xjjuti::progressbar(int index_, int total_, int morespace_/*=0*/)
 {
   std::cout<<std::setiosflags(std::ios::left)<<"  [ \033[1;36m"<<std::setw(10+morespace_)<<index_<<"\033[0m"<<" / "<<std::setw(10+morespace_)<<total_<<" ] "<<"\033[1;36m"<<std::fixed<<std::setprecision(0)<<100.*index_/total_<<"%\033[0m"<<"\r"<<std::flush;
+}
+
+void xjjuti::progressbar_summary(int total_)
+{
+  std::cout<<std::endl<<"  Processed "<<"\033[1;31m"<<total_<<"\033[0m event(s)."<<std::endl;
 }
 
 

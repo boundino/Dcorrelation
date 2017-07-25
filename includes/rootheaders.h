@@ -5,6 +5,8 @@
 #include <iomanip>
 #include <fstream>
 #include <utility>
+#include <cmath>
+
 #include <TFile.h>
 #include <TDirectoryFile.h>
 #include <TDirectory.h>

@@ -77,7 +77,9 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(jleading[l]<0) continue;
           for(std::map<int, float>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
-              if(it->first!=jleading[l]) hdphi[l]->Fill(TMath::Abs(it->second - dphi[l].at(jleading[l])));
+              float deltaphi = TMath::Abs(it->second - dphi[l].at(jleading[l]));
+              float filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);
+              if(it->first!=jleading[l]) hdphi[l]->Fill(filldeltaphi);
             }
         }
     }
