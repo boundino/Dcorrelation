@@ -80,9 +80,9 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
 
 int main(int argc, char* argv[])
 {
-  if(argc==8)
+  if(argc==9)
     {
-      dphicor_usehist(argv[1], argv[2], argv[3], argv[4], atoi(argv[5]), atof(argv[6]), atof(argv[7]));
+      dphicor_usehist(argv[1], argv[2], argv[3], argv[4], atoi(argv[5]), atof(argv[6]), atof(argv[7]), atof(argv[8]));
       return 0;
     }
   else
