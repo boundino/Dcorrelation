@@ -5,6 +5,10 @@
 
 namespace xjjrootuti
 {
+  const float x_tex_left_top = 0.23;
+  const float y_tex_left_top = 0.91;
+  const float dy_tex_left_top = 0.06;
+
   void setgstyle();
   void sethempty(TH2F* hempty, float xoffset=0, float yoffset=0);
   template <class T>
@@ -15,6 +19,7 @@ namespace xjjrootuti
   void settex(TLatex* tex, Float_t size=0.04, Int_t align=12);
   void settexndraw(TLatex* tex, Float_t size=0.04, Int_t align=12);
   void setleg(TLegend* leg, Float_t size=0.04);
+  void setlegndraw(TLegend* leg, Float_t size=0.04);
   void setbranchaddress(TTree* nt, const char* bname, void* addr);
 }
 
@@ -118,6 +123,12 @@ void xjjrootuti::setleg(TLegend* leg, Float_t size/*=0.04*/)
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
   leg->SetTextSize(size);
+}
+
+void xjjrootuti::setlegndraw(TLegend* leg, Float_t size/*=0.04*/)
+{
+  xjjrootuti::setleg(leg, size);
+  leg->Draw();
 }
 
 void xjjrootuti::setbranchaddress(TTree* nt, const char* bname, void* addr)

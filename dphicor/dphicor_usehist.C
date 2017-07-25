@@ -23,7 +23,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   Float_t* fitresult = new Float_t[2];
   TH1D* hdphi_all_fit = new TH1D("hdphi_all_fit",";#Delta#phi;Entries", nDphiBins, minDphi, maxDphi);
   xjjrootuti::setthgr(hdphi_all_fit);
-  xjjrootuti::setthgrstyle(hdphi_all_fit, kGreen+3);
+  xjjrootuti::setthgrstyle(hdphi_all_fit, kRed+1);
 
   for(int i=0;i<nDphiBins;i++) 
     {
@@ -46,14 +46,33 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   TCanvas* cdphi = new TCanvas("cdphi","",600,600);
   cdphi->SetLogy();
   hempty->Draw();
+  int n_objects = 0;
   for(int l=0;l<nhist;l++)
     {
       if(l && (l==3 || !isMC)) continue;
       hdphi[l]->Draw("pe same");
+      n_objects++;
     }
   hdphi_all_fit->Draw("pe same");
-  TLegend* leg = new TLegend();
+  n_objects++;
+  
+  TLegend* leg = new TLegend(0.55, 0.88-0.06*n_objects, 0.82, 0.88,NULL,"brNDC");
+  for(int l=0;l<nhist;l++)
+    {
+      if(l && (l==3 || !isMC)) continue;
+      leg->AddEntry(hdphi[l], histleg[l], "p");
+    }
+  leg->AddEntry(hdphi_all_fit, "all D_{lead}, fit ext D", "p");
+  xjjrootuti::setlegndraw(leg);
+
   xjjrootuti::drawCMS(collisionsyst);
+  float texypos = xjjrootuti::y_tex_left_top, texxpos = xjjrootuti::x_tex_left_top;
+  TLatex* texrap = new TLatex(texxpos,texypos=(texypos-xjjrootuti::dy_tex_left_top),"|y^{D}| < 1");
+  xjjrootuti::settexndraw(texrap);
+  TLatex* texleadpt = new TLatex(texxpos,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()));
+  xjjrootuti::settexndraw(texleadpt);
+  TLatex* texpt = new TLatex(texxpos ,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D} > %s GeV/c",xjjuti::number_remove_zero(other_ptmin).c_str()));
+  xjjrootuti::settexndraw(texpt);
   cdphi->SaveAs(Form("plots/cdphi_%s.pdf",outplotname.Data()));
 
   return 0;

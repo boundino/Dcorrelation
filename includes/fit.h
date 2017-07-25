@@ -195,14 +195,14 @@ TF1* fit(TH1D* h, TH1D* hMCSignal, TH1D* hMCSwapped,
 
   xjjrootuti::drawCMS(collisionsyst);
 
-  float texdypos = 0.06, texypos = 0.83 + texdypos;
-  TLatex* texdphi = new TLatex(0.22,texypos=(texypos-texdypos),Form("%.2f < #Delta#phi < %.2f",dphimin,dphimax));
+  float texypos = xjjrootuti::y_tex_left_top;
+  TLatex* texdphi = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("%.2f < #Delta#phi < %.2f",dphimin,dphimax));
   xjjrootuti::settexndraw(texdphi);
-  TLatex* texrap = new TLatex(0.22,texypos=(texypos-texdypos),"|y^{D}| < 1");
+  TLatex* texrap = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),"|y^{D}| < 1");
   xjjrootuti::settexndraw(texrap);
-  TLatex* texleadpt = new TLatex(0.22,texypos=(texypos-texdypos),Form("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()));
+  TLatex* texleadpt = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()));
   xjjrootuti::settexndraw(texleadpt);
-  TLatex* texpt = new TLatex(0.22,texypos=(texypos-texdypos),Form("p_{T}^{D} > %s GeV/c",xjjuti::number_remove_zero(other_ptmin).c_str()));
+  TLatex* texpt = new TLatex(xjjrootuti::x_tex_left_top ,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D} > %s GeV/c",xjjuti::number_remove_zero(other_ptmin).c_str()));
   xjjrootuti::settexndraw(texpt);
   
   c->SaveAs(Form("%s.pdf",outputname.Data()));

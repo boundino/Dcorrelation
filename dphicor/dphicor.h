@@ -18,7 +18,8 @@ const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
 const int nhist = 4;
 TString histname[nhist] = {"hdphi_all_all", "hdphi_signal_signal", "hdphi_all_signal", "hdphi_signal_all"};
-Color_t hcolor[nhist]   = {kBlack,          kRed+1,                kAzure-6,           kMagenta+3};
+TString histleg[nhist]  = {"all D_{lead}, all D", "g-mat D_{lead}, g-mat D", "all D_{lead}, g-mat D", "g-mat D_{lead}, all D"};
+Color_t hcolor[nhist]   = {kBlack, kGreen+3, kAzure-6, kMagenta+3};
 
 std::vector<TString> cutval_list_skim_pp = {"pBeamScrapingFilter", "pPAprimaryVertexFilter"};
 std::vector<TString> cutval_list_skim_PbPb = {"pclusterCompatibilityFilter", "pprimaryVertexFilter", "phfCoincFilter3"};
