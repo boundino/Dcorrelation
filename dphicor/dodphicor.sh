@@ -77,7 +77,7 @@ then
         if [ $(run_this_bin $j $jCOLSYST) -eq 1 ]
         then
             TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})
-            echo -e "-- Processing \033[1;33mdphicor_savehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${MC} leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]}${NC}"
+            echo -e "-- Processing \033[1;33mdphicor_savehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]} GeV${NC}"
             set -x
             ./dphicor_savehist.exe "${INPUTNAME[j]}" "rootfiles/fdphi_${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]}
             set +x
@@ -98,7 +98,7 @@ then
         if [ $(run_this_bin $j $jCOLSYST) -eq 1 ]
         then
             TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})
-            echo -e "-- Processing \033[1;33mdphicor_usehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]}${NC}"
+            echo -e "-- Processing \033[1;33mdphicor_usehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]} GeV${NC}"
             set -x
             ./dphicor_usehist.exe "rootfiles/fdphi_${TEND}" "${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]}
             set +x

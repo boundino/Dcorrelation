@@ -83,7 +83,6 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
             }
         }
     }
-  std::cout<<std::endl;
   xjjuti::progressbar_summary(nentries);
   
   TFile* outf = new TFile(Form("%s.root",outfname.Data()),"recreate");
