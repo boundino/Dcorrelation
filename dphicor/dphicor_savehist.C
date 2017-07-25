@@ -27,7 +27,9 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
   TH1D** hdphi = new TH1D*[nhist];
   TH1D** hmass = new TH1D*[nDphiBins];
   for(int l=0;l<nhist;l++) hdphi[l] = new TH1D(histname[l], ";#Delta#phi;Entries", 50, 0, M_PI);
-  for(int i=0;i<nDphiBins;i++) hmass[i] = new TH1D(Form("hmass_%d",i), ";m_{K#pi} (GeV/c^{2});Entries", 60, 1.7, 2.0);
+  for(int i=0;i<nDphiBins;i++) hmass[i] = new TH1D(Form("hmass_%d",i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+  TH1D* hmassSignal = new TH1D(Form("hmassSignal"), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+  TH1D* hmassSwapped = new TH1D(Form("hmassSwapped"), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
   for(int i=0;i<nentries;i++)
     {
       if(i%10000==0) xjjuti::progressbar(i, nentries);
@@ -75,6 +77,8 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(!dcand.isselected(j)) continue;
           dphi[0].insert(std::pair<int, float>(j, dcand.Dphi[j]));
           if(dcand.Dgen[j]==23333) dphi[1].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) hmassSignal->Fill(dcand.Dmass[j]);
+          if(dcand.Dgen[j]==23344) hmassSwapped->Fill(dcand.Dmass[j]);
         }
       for(int l=0;l<nhist;l++)
         {
@@ -97,6 +101,8 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
   outf->cd();
   for(int l=0;l<nhist;l++) hdphi[l]->Write();
   for(int i=0;i<nDphiBins;i++) hmass[i]->Write();
+  hmassSignal->Write();
+  hmassSwapped->Write();
   outf->Write();
   outf->Close();
 
