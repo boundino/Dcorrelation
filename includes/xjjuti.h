@@ -11,9 +11,9 @@
 namespace xjjuti
 {
   template<size_t N, typename T>
-  int initarray(T (*array_)[N], T initval_=0);
+  void initarray(T (*array_)[N], T initval_=0);
   template<size_t N>
-  int findibin(float (*array_)[N], float element_);
+  int findibin(const float (*array_)[N], float element_);
   template<size_t N>
   int findiedge(const float (*array_)[N], float element_);
   template<typename T>
@@ -26,13 +26,12 @@ namespace xjjuti
 
 //
 template<size_t N, typename T>
-int xjjuti::initarray(T (*array_)[N], T initval_/*=0*/)
+void xjjuti::initarray(T (*array_)[N], T initval_/*=0*/)
 {
   for(std::size_t i=0;i<(sizeof(*array_)/sizeof((*array_)[0]));i++)
     {
       (*array_)[i]  = initval_;
     }
-  return 0;
 }
 
 template<size_t N>

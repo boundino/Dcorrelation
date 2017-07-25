@@ -45,12 +45,9 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
       
       int jleading[nhist];
       float ptleading[nhist], phileading[nhist];
-      for(int l=0;l<nhist;l++)
-        {
-          jleading[l] = -1;
-          ptleading[l] = 0;
-          phileading[l] = 0;
-        }
+      xjjuti::initarray(&jleading, -1);
+      xjjuti::initarray(&ptleading, (float)0);
+      xjjuti::initarray(&phileading, (float)0);
       std::map<int, float> dphi[nhist];
       for(int j=0;j<dcand.Dsize;j++)
         {
