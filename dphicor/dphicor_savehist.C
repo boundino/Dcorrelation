@@ -1,6 +1,6 @@
 #include "dphicor.h"
 
-int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, Int_t isMC, Float_t leading_ptmin, Float_t other_ptmin)
+int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, Int_t isMC, Float_t leading_ptmin, Float_t other_ptmin, Float_t leading_trkptmin)
 {
   std::cout<<std::endl;
   initcutval(collisionsyst);
@@ -55,7 +55,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(ipt<0) continue;
           int err_initcutval_ptdep = initcutval_ptdep(collisionsyst, ipt);
           if(err_initcutval_ptdep) return 1;
-          dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
+          dcand.settrkcut(leading_trkptmin, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
           if(dcand.isselected(j))
             {
@@ -78,6 +78,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
                   phileading[3] = dcand.Dphi[j];
                 }
             }
+          dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
           if(!dcand.isselected(j)) continue;
           dphi[0].insert(std::pair<int, float>(j, dcand.Dphi[j]));
@@ -118,9 +119,9 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
 
 int main(int argc, char* argv[])
 {
-  if(argc==7)
+  if(argc==8)
     {
-      dphicor_savehist(argv[1], argv[2], argv[3], atoi(argv[4]), atof(argv[5]), atof(argv[6]));
+      dphicor_savehist(argv[1], argv[2], argv[3], atoi(argv[4]), atof(argv[5]), atof(argv[6]), atof(argv[7]));
       return 0;
     }
   else

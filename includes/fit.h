@@ -18,7 +18,7 @@ Double_t binwidthmass = (maxhisto-minhisto)/nbinsmasshisto;
 
 TF1* fit(TH1D* h, TH1D* hMCSignal, TH1D* hMCSwapped, 
 	 TString outputname, Float_t* results, TString collisionsyst,
-	 Float_t leading_ptmin, Float_t other_ptmin, Float_t dphimin, Float_t dphimax,
+	 Float_t leading_ptmin, Float_t other_ptmin, Float_t dphimin, Float_t dphimax, Float_t leading_trkptmin,
 	 Bool_t verbose=true, Bool_t ifsethmaximum=true)
 {
 
@@ -195,9 +195,12 @@ TF1* fit(TH1D* h, TH1D* hMCSignal, TH1D* hMCSwapped,
 
   xjjrootuti::drawCMS(collisionsyst);
 
+  float texxpos = xjjrootuti::x_tex_left_top + 0.01;
   float texypos = xjjrootuti::y_tex_left_top;
   TLatex* texdphi = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("%.2f < #Delta#phi < %.2f",dphimin,dphimax));
   xjjrootuti::settexndraw(texdphi);
+  TLatex* textrkpt = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()));
+  xjjrootuti::settexndraw(textrkpt);
   TLatex* texrap = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),"|y^{D}| < 1");
   xjjrootuti::settexndraw(texrap);
   TLatex* texleadpt = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()));

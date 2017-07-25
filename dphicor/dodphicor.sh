@@ -4,9 +4,9 @@
 # -1: loop all bins
 jCOLSYST=-1
 #
-DO_DPHICOR_SAVEFITTPL=0
-DO_DPHICOR_SAVEHIST=0
-DO_DPHICOR_USEHIST=1
+DO_DPHICOR_SAVEFITTPL=1
+DO_DPHICOR_SAVEHIST=1
+DO_DPHICOR_USEHIST=0
 
 # nCOL loop
 COLSYST=('pp' 'pp' 'PbPb' 'PbPb')
@@ -14,6 +14,7 @@ ISMC=(1 0 1 0)
 NEEDFITTPL=(1 0 1 0)
 LEADING_PTMIN=(20 20 20 20)
 OTHER_PTMIN=(2 2 2 2)
+LEADING_TRKPTMIN=(5 5 5 5)
 
 INPUTDNAME=("/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
     "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160330_HeavyFlavor_DfinderData_pp_20160329_dPt0tkPt1_D0Dstar3p5p_goldenjson.root"
@@ -83,10 +84,10 @@ then
     do
         if [ $(run_this_bin $j $jCOLSYST) -eq 1 ] && [ ${NEEDFITTPL[j]} -eq 1 ]
         then
-            TEND=DCOR_${COLSYST[j]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})
+            TEND=DCOR_${COLSYST[j]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[j]})
             echo -e "-- Processing \033[1;33mdphicor_savefittpl.C${NC}, \033[1;32m${COLSYST[j]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]} GeV${NC}"
             set -x
-            ./dphicor_savefittpl.exe "${INPUTSNAME[j]}" "rootfiles/ffittpl_${TEND}" "${COLSYST[j]}" ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]}
+            ./dphicor_savefittpl.exe "${INPUTSNAME[j]}" "rootfiles/ffittpl_${TEND}" "${COLSYST[j]}" ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]} ${LEADING_TRKPTMIN[j]}
             set +x
             echo
         fi
@@ -104,10 +105,10 @@ then
     do
         if [ $(run_this_bin $j $jCOLSYST) -eq 1 ]
         then
-            TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})
+            TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[j]})
             echo -e "-- Processing \033[1;33mdphicor_savehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]} GeV${NC}"
             set -x
-            ./dphicor_savehist.exe "${INPUTDNAME[j]}" "rootfiles/fdphi_${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]}
+            ./dphicor_savehist.exe "${INPUTDNAME[j]}" "rootfiles/fdphi_${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]} ${LEADING_TRKPTMIN[j]}
             set +x
             echo
         fi
@@ -125,11 +126,11 @@ then
     do
         if [ $(run_this_bin $j $jCOLSYST) -eq 1 ]
         then
-            TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})
-            FITTEND=DCOR_${COLSYST[j]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})
+            TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[j]})
+            FITTEND=DCOR_${COLSYST[j]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[j]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[j]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[j]})
             echo -e "-- Processing \033[1;33mdphicor_usehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[j]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[j]} GeV${NC}"
             set -x
-            ./dphicor_usehist.exe "rootfiles/fdphi_${TEND}" "rootfiles/ffittpl_${FITTEND}" "${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]}
+            ./dphicor_usehist.exe "rootfiles/fdphi_${TEND}" "rootfiles/ffittpl_${FITTEND}" "${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[j]} ${OTHER_PTMIN[j]} ${LEADING_TRKPTMIN[j]}
             set +x
             echo
         fi

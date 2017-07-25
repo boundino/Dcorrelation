@@ -1,6 +1,6 @@
 #include "dphicor.h"
 
-int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, TString collisionsyst, Int_t isMC, Float_t leading_ptmin, Float_t other_ptmin)
+int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, TString collisionsyst, Int_t isMC, Float_t leading_ptmin, Float_t other_ptmin, Float_t leading_trkptmin)
 {
   xjjrootuti::setgstyle();
 
@@ -33,7 +33,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
       Float_t dphimin = dphiBins[i], dphimax = dphiBins[i+1];
       TF1* fmass = fit(hmass[i], hmassSignal[i], hmassSwapped[i], 
                        Form("plotfits/cmass_%s_dphi_%d",outplotname.Data(),i), fitresult, collisionsyst,
-                       leading_ptmin, other_ptmin, dphimin, dphimax,
+                       leading_ptmin, other_ptmin, dphimin, dphimax, leading_trkptmin,
                        false);
       hdphi_all_fit->SetBinContent(i+1, fmass->Integral(minhisto,maxhisto)/binwidthmass);
       hdphi_all_fit->SetBinError(i+1, fmass->Integral(minhisto,maxhisto)/binwidthmass*fmass->GetParError(0)/fmass->GetParameter(0));
