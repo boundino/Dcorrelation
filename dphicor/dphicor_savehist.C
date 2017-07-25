@@ -12,7 +12,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
   TTree* ntHi = (TTree*)inf->Get("ntHi");
   TTree* ntSkim = (TTree*)inf->Get("ntSkim");
 
-  readD dcand(MAX_XB, MAX_GEN);
+  readD dcand(MAX_XB, MAX_GEN, (bool)isMC);
   dcand.setbranchesaddress(ntDkpi, ntGen, ntHi);
   ntHlt->SetBranchStatus("*", 0);
   int val_hlt;
@@ -81,6 +81,8 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
             }
         }
     }
+  std::cout<<std::endl;
+  xjjuti::progressbar_summary(nentries);
   
   TFile* outf = new TFile(Form("%s.root",outfname.Data()),"recreate");
   outf->cd();

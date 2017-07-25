@@ -6,13 +6,17 @@ int dphicor_usehist(TString outfname, TString outplotname, TString collisionsyst
   xjjrootuti::setgstyle();
 
   TFile* inf = new TFile(Form("%s.root",outfname.Data()));
-  TH1D* hdphi = (TH1D*)inf->Get("hdphi");
-  hdphi->Sumw2();
-  xjjrootuti::setth1(hdphi);
+  TH1D** hdphi = new TH1D*[nhist];
+  for(int l=0;l<nhist;l++) 
+    {
+      hdphi[l] = (TH1D*)inf->Get(histname[l]);
+      hdphi[l]->Sumw2();
+      xjjrootuti::setth1(hdphi[l]);
+    }
 
   TCanvas* cdphi = new TCanvas("cdphi","",600,600);  
   cdphi->SetLogy();
-  hdphi->Draw("pe");
+  hdphi[0]->Draw("pe");
   xjjrootuti::drawCMS(collisionsyst);
   cdphi->SaveAs(Form("plots/cdphi_%s.pdf",outplotname.Data()));
 

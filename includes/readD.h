@@ -9,6 +9,7 @@ class readD
 
   int              MAX_ND;
   int              MAX_NG;
+  bool             isMC;
   float            cut_trkPt;
   float            cut_trkEta;
   float            cut_trkPtErr;
@@ -101,10 +102,11 @@ public:
   float*           Gpt;
 
   //
-  readD(int MAX_ND_, int MAX_NG_)
+  readD(int MAX_ND_, int MAX_NG_, bool isMC_)
     {
       MAX_ND = MAX_ND_;
       MAX_NG = MAX_NG_;
+      isMC = isMC_;
       cut_trkPt = -99;
       cut_trkEta = -99;
       cut_trkPtErr = -99;
@@ -114,6 +116,8 @@ public:
       cut_Dchi2cl = -99;
       cut_Dpt_min = -99;
       cut_Dpt_max = -99;
+
+      init();
     }
   ~readD() {};
 
@@ -214,19 +218,11 @@ void readD::setbranchaddress(TTree* nt, const char* bname, void* addr)
 
 void readD::setbranchesaddress(TTree* nt, TTree* ntGen, TTree* ntHi)
 {
-  init();
   nt->SetBranchStatus("*", 0);
   ntGen->SetBranchStatus("*", 0);
   ntHi->SetBranchStatus("*", 0);
 
-  setbranchaddress(ntHi,  "hiBin",            &hiBin);
-  setbranchaddress(ntHi,  "vz",               &vz);
-  setbranchaddress(ntHi,  "weight",           &weight);
-  setbranchaddress(ntHi,  "pthat",            &pthat);
-
-  setbranchaddress(ntHi,  "pthatweight",      &pthatweight);
-  setbranchaddress(ntHi,  "maxDgenpt",        &maxDgenpt);
-
+  // nt
   setbranchaddress(nt,    "RunNo",            &RunNo);
   setbranchaddress(nt,    "EvtNo",            &EvtNo);
   setbranchaddress(nt,    "LumiNo",           &LumiNo);
@@ -288,6 +284,7 @@ void readD::setbranchesaddress(TTree* nt, TTree* ntGen, TTree* ntHi)
   setbranchaddress(nt,    "Dtrk2Y",           Dtrk2Y);
   setbranchaddress(nt,    "Dgen",             Dgen);
 
+  // ntGen
   setbranchaddress(ntGen, "Gsize",            &Gsize);
   setbranchaddress(ntGen, "GpdgId",           GpdgId);
   setbranchaddress(ntGen, "GisSignal",        GisSignal);
@@ -296,6 +293,16 @@ void readD::setbranchesaddress(TTree* nt, TTree* ntGen, TTree* ntHi)
   setbranchaddress(ntGen, "Gphi",             Gphi);
   setbranchaddress(ntGen, "Gpt",              Gpt);
 
+  // ntHi
+  setbranchaddress(ntHi,  "hiBin",            &hiBin);
+  setbranchaddress(ntHi,  "vz",               &vz);
+  if(isMC)
+    {
+      setbranchaddress(ntHi,  "weight",           &weight);
+      setbranchaddress(ntHi,  "pthat",            &pthat);
+      setbranchaddress(ntHi,  "pthatweight",      &pthatweight);
+      setbranchaddress(ntHi,  "maxDgenpt",        &maxDgenpt);
+    }
 }
 
 void readD::settrkcut(float _cut_trkPt, float _cut_trkEta, float _cut_trkPtErr)
