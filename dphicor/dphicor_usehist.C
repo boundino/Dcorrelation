@@ -66,7 +66,9 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   xjjrootuti::setlegndraw(leg);
 
   xjjrootuti::drawCMS(collisionsyst);
-  float texypos = xjjrootuti::y_tex_left_top, texxpos = xjjrootuti::x_tex_left_top;
+  float texypos = xjjrootuti::y_tex_left_top, texxpos = xjjrootuti::x_tex_left_top + 0.01;
+  TLatex* textrkpt = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()));
+  xjjrootuti::settexndraw(textrkpt);
   TLatex* texrap = new TLatex(texxpos,texypos=(texypos-xjjrootuti::dy_tex_left_top),"|y^{D}| < 1");
   xjjrootuti::settexndraw(texrap);
   TLatex* texleadpt = new TLatex(texxpos,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()));
