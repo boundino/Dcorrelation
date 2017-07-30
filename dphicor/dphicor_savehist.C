@@ -4,34 +4,38 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
 {
   std::cout<<std::endl;
   initcutval(collisionsyst);
-
+  
   for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
-
+  
   TFile* inf = new TFile(infname);
   TTree* ntDkpi = (TTree*)inf->Get("ntDkpi");
   TTree* ntGen = (TTree*)inf->Get("ntGen");
   TTree* ntHlt = (TTree*)inf->Get("ntHlt");
   TTree* ntHi = (TTree*)inf->Get("ntHi");
   TTree* ntSkim = (TTree*)inf->Get("ntSkim");
-
+  
   readD dcand(MAX_XB, MAX_GEN, (bool)isMC);
   dcand.setbranchesaddress(ntDkpi, ntGen, ntHi);
   ntHlt->SetBranchStatus("*", 0);
   int val_hlt;
-  xjjrootuti::setbranchaddress(ntHlt, cutval_hlt.Data(), &val_hlt);
+  xjjroot::setbranchaddress(ntHlt, cutval_hlt.Data(), &val_hlt);
   ntSkim->SetBranchStatus("*", 0);
   int* val_skim = new int[cutval_skim.size()];
-  for(int k=0;k<cutval_skim.size();k++) xjjrootuti::setbranchaddress(ntSkim, cutval_skim[k].Data(), &val_skim[k]);
-
-  TH1D** hdphi = new TH1D*[nhist];
-  TH1D** hmass = new TH1D*[nDphiBins];
-  for(int l=0;l<nhist;l++) hdphi[l] = new TH1D(histname[l], ";#Delta#phi;Entries", nDphiBins_fine, 0, M_PI);
-  for(int i=0;i<nDphiBins;i++) hmass[i] = new TH1D(Form("hmass_%d",i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
-
+  for(int k=0;k<cutval_skim.size();k++) xjjroot::setbranchaddress(ntSkim, cutval_skim[k].Data(), &val_skim[k]);
+  
+  TH1D* hdphi[nhist];
+  TH1D* hmass[nhist][nDphiBins];
+  for(int l=0;l<nhist;l++) 
+    {
+      hdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins_fine, 0, M_PI);
+      for(int i=0;i<nDphiBins;i++) hmass[l][i] = new TH1D(Form("hmass_%s_%d",histname[l].Data(),i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+    }
+  TH1D* hmassLD = new TH1D("hmassLD", ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+  
   int nentries = ntDkpi->GetEntries();
   for(int i=0;i<nentries;i++)
     {
-      if(i%10000==0) xjjuti::progressbar(i, nentries);
+      if(i%10000==0) xjjc::progressbar(i, nentries);
       ntDkpi->GetEntry(i);
       ntHlt->GetEntry(i);
       ntSkim->GetEntry(i);
@@ -43,15 +47,13 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
         }
       if(TMath::Abs(dcand.PVz)>15) continue;
       
-      int jleading[nhist];
-      float ptleading[nhist], phileading[nhist];
-      xjjuti::initarray(&jleading, -1);
-      xjjuti::initarray(&ptleading, (float)0);
-      xjjuti::initarray(&phileading, (float)0);
+      // find leading D
+      int jleading = -1;
+      float ptleading = 0;
       std::map<int, float> dphi[nhist];
       for(int j=0;j<dcand.Dsize;j++)
         {
-          int ipt = xjjuti::findibin(&ptBins, dcand.Dpt[j]);
+          int ipt = xjjc::findibin(&ptBins, dcand.Dpt[j]);
           if(ipt<0) continue;
           int err_initcutval_ptdep = initcutval_ptdep(collisionsyst, ipt);
           if(err_initcutval_ptdep) return 1;
@@ -59,58 +61,60 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
           if(dcand.isselected(j))
             {
-              if(dcand.Dpt[j]>ptleading[0])
+              if(dcand.Dpt[j]>ptleading)
                 {
-                  jleading[0] = j;
-                  ptleading[0] = dcand.Dpt[j];
-                  phileading[0] = dcand.Dphi[j];
-                  jleading[2] = j;
-                  ptleading[2] = dcand.Dpt[j];
-                  phileading[2] = dcand.Dphi[j];
+                  jleading = j;
+                  ptleading = dcand.Dpt[j];
                 }
-              if(dcand.Dgen[j]==23333 && dcand.Dpt[j]>ptleading[1])
-                {
-                  jleading[1] = j;
-                  ptleading[1] = dcand.Dpt[j];              
-                  phileading[1] = dcand.Dphi[j];
-                  jleading[3] = j;
-                  ptleading[3] = dcand.Dpt[j];              
-                  phileading[3] = dcand.Dphi[j];
-                }
-            }
+            }          
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
           if(!dcand.isselected(j)) continue;
           dphi[0].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          dphi[3].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          if(dcand.Dgen[j]==23333) 
-            {
-              dphi[1].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-              dphi[2].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-            }
+          if(dcand.Dgen[j]==23333) dphi[1].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          dphi[2].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) dphi[3].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          dphi[4].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) dphi[5].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          dphi[6].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) dphi[7].insert(std::pair<int, float>(j, dcand.Dphi[j]));
         }
+      // fill dphi
+      if(jleading<0) continue;
+      hmassLD->Fill(dcand.Dmass[jleading]);
+      Bool_t leadingsel[nhist] = {true, true, 
+                                  dcand.Dgen[jleading]==23333, dcand.Dgen[jleading]==23333, 
+                                  TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_signalreg, TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_signalreg,
+                                  TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h, TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h};
       for(int l=0;l<nhist;l++)
         {
-          if(jleading[l]<0 || dphi[l].size()==0) continue;
+          if(!leadingsel[l] || dphi[l].empty()) continue;
           for(std::map<int, float>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
-              if(it->first==jleading[l]) continue;
-              float deltaphi = TMath::Abs(it->second - phileading[l]);
+              if(it->first==jleading) continue;
+              float deltaphi = TMath::Abs(it->second - dcand.Dphi[jleading]);
               float filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
               hdphi[l]->Fill(filldeltaphi);
-              if(l) continue;
-              int idphi = xjjuti::findibin(&dphiBins, filldeltaphi);
+              if(!histsave[l]) continue;
+              int idphi = xjjc::findibin(&dphiBins, filldeltaphi);
               if(idphi<0) return 1;
-              hmass[idphi]->Fill(dcand.Dmass[it->first]);
+              hmass[l][idphi]->Fill(dcand.Dmass[it->first]);
             }
         }
     }
-  xjjuti::progressbar_summary(nentries);
+  xjjc::progressbar_summary(nentries);
   
+  for(int l=0;l<nhist;l++) xjjroot::dividebinwid(hdphi[l]);
+
   TFile* outf = new TFile(Form("%s.root",outfname.Data()),"recreate");
   outf->cd();
-  for(int l=0;l<nhist;l++) hdphi[l]->Write();
-  for(int i=0;i<nDphiBins;i++) hmass[i]->Write();
+  hmassLD->Write();
+  for(int l=0;l<nhist;l++)
+    {
+      hdphi[l]->Write();
+      if(!histsave[l]) continue;
+      for(int i=0;i<nDphiBins;i++) hmass[l][i]->Write();
+    }
   outf->Write();
   outf->Close();
 

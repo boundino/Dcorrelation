@@ -18,13 +18,15 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
   dcand.setbranchesaddress(ntDkpi, ntGen, ntHi);
   ntHlt->SetBranchStatus("*", 0);
   int val_hlt;
-  xjjrootuti::setbranchaddress(ntHlt, cutval_hlt.Data(), &val_hlt);
+  xjjroot::setbranchaddress(ntHlt, cutval_hlt.Data(), &val_hlt);
   ntSkim->SetBranchStatus("*", 0);
   int* val_skim = new int[cutval_skim.size()];
-  for(int k=0;k<cutval_skim.size();k++) xjjrootuti::setbranchaddress(ntSkim, cutval_skim[k].Data(), &val_skim[k]);
+  for(int k=0;k<cutval_skim.size();k++) xjjroot::setbranchaddress(ntSkim, cutval_skim[k].Data(), &val_skim[k]);
 
   TH1D** hmassSignal = new TH1D*[nDphiBins];
   TH1D** hmassSwapped = new TH1D*[nDphiBins];
+  TH1D* hmassSignalLD = new TH1D("hmassSignalLD", ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+  TH1D* hmassSwappedLD = new TH1D("hmassSwappedLD", ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
   for(int i=0;i<nDphiBins;i++)
     {
       hmassSignal[i] = new TH1D(Form("hmassSignal_%d",i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
@@ -33,7 +35,7 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
   int nentries = ntDkpi->GetEntries();
   for(int i=0;i<nentries;i++)
     {
-      if(i%10000==0) xjjuti::progressbar(i, nentries);
+      if(i%10000==0) xjjc::progressbar(i, nentries);
       ntDkpi->GetEntry(i);
       ntHlt->GetEntry(i);
       ntSkim->GetEntry(i);
@@ -50,7 +52,7 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
       std::map<int, float> dphi;
       for(int j=0;j<dcand.Dsize;j++)
         {
-          int ipt = xjjuti::findibin(&ptBins, dcand.Dpt[j]);
+          int ipt = xjjc::findibin(&ptBins, dcand.Dpt[j]);
           if(ipt<0) continue;
           int err_initcutval_ptdep = initcutval_ptdep(collisionsyst, ipt);
           if(err_initcutval_ptdep) return 1;
@@ -67,21 +69,25 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
           dphi.insert(std::pair<int, float>(j, dcand.Dphi[j]));
         }
       if(jleading<0) continue;
+      if(dcand.Dgen[jleading]==23333) hmassSignalLD->Fill(dcand.Dmass[jleading]);
+      if(dcand.Dgen[jleading]==23344) hmassSwappedLD->Fill(dcand.Dmass[jleading]);
       for(std::map<int, float>::iterator it=dphi.begin(); it!=dphi.end(); it++)
         {
           float deltaphi = TMath::Abs(it->second - dphi.at(jleading));
           float filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
           if(it->first==jleading) continue;
-          int idphi = xjjuti::findibin(&dphiBins, filldeltaphi);
+          int idphi = xjjc::findibin(&dphiBins, filldeltaphi);
           if(idphi<0) return 1;
           if(dcand.Dgen[it->first]==23333) hmassSignal[idphi]->Fill(dcand.Dmass[it->first]);
           if(dcand.Dgen[it->first]==23344) hmassSwapped[idphi]->Fill(dcand.Dmass[it->first]);
         }
     }
-  xjjuti::progressbar_summary(nentries);
+  xjjc::progressbar_summary(nentries);
   
   TFile* outf = new TFile(Form("%s.root",outfname.Data()),"recreate");
   outf->cd();
+  hmassSignalLD->Write();
+  hmassSwappedLD->Write();
   for(int i=0;i<nDphiBins;i++) 
     {
       hmassSignal[i]->Write();

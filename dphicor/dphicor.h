@@ -1,26 +1,37 @@
-#include "../includes/xjjuti.h"
+#ifndef _DPHICOR_H_
+#define _DPHICOR_H_
+
+#include "../includes/xjjcuti.h"
 #include "../includes/xjjrootuti.h"
 #include "../includes/readD.h"
-#include "../includes/fit.h"
+#include "../includes/dfitter.h"
+#include <TFile.h>
 
 const int MAX_XB = 20000;
 const int MAX_GEN = 6000;
+const float MASS_DZERO = 1.8649;
 
 //
+Float_t dmass_sideband_l = 0.07;
+Float_t dmass_sideband_h = 0.12;
+
 const int nPtBins = 10;
 Float_t ptBins[nPtBins+1] = {2, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
 const int nDphiBins_fine = 50;
-const int nDphiBins = 10;
 Float_t minDphi = 0;
 Float_t maxDphi = M_PI;
+const int nDphiBins = 10;
 Float_t dphiBins[nDphiBins+1];
 const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
-const int nhist = 4;
-TString histname[nhist] = {"hdphi_all_all", "hdphi_signal_signal", "hdphi_all_signal", "hdphi_signal_all"};
-TString histleg[nhist]  = {"all D_{lead}, all D", "g-mat D_{lead}, g-mat D", "all D_{lead}, g-mat D", "g-mat D_{lead}, all D"};
-Color_t hcolor[nhist]   = {kBlack, kGreen+3, kAzure-6, kMagenta+3};
+const int nhist = 8;
+TString histname[nhist] = {"all_all", "all_signal", "signal_all", "signal_signal", "signalreg_all", "signalreg_signal", "sideband_all", "sideband_signal"};
+Bool_t  histsave[nhist] = {true,      false,        true,         false,           true,            false,              true,           false};
 
+std::map<char*, Color_t> histcolor = {{"hdphi_all_all", kBlack}, {"hdphi_signal_signal", kGreen+3}, {"hdphi_all_signal", kAzure-6}, {"hdphi_all_all_fit", kRed}, {"hdphi_subtract_all_fit", kMagenta+3}};
+std::map<char*, TString> histleg = {{"hdphi_all_all", "all D_{lead}, all D"}, {"hdphi_signal_signal", "g-mat D_{lead}, g-mat D"}, {"hdphi_all_signal", "all D_{lead}, g-mat D"}, {"hdphi_all_all_fit", "all D_{lead}", "fit D"}, {"hdphi_subtract_all_fit", "bkg sub D_{lead}, fit D"}}
+
+//
 std::vector<TString> cutval_list_skim_pp = {"pBeamScrapingFilter", "pPAprimaryVertexFilter"};
 std::vector<TString> cutval_list_skim_PbPb = {"pclusterCompatibilityFilter", "pprimaryVertexFilter", "phfCoincFilter3"};
 
@@ -79,3 +90,5 @@ int initcutval_ptdep(TString collisionsyst, int ipt)
   cutval_Dchi2cl = cutval_list_Dchi2cl[icollsyst][ipt];
   return 0;
 }
+
+#endif

@@ -2,79 +2,95 @@
 
 int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, TString collisionsyst, Int_t isMC, Float_t leading_ptmin, Float_t other_ptmin, Float_t leading_trkptmin)
 {
-  xjjrootuti::setgstyle();
+  xjjroot::setgstyle();
 
   for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
 
   TFile* infD = new TFile(Form("%s.root",outfDname.Data()));
   TFile* infS = new TFile(Form("%s.root",outffittpl.Data()));
-  TH1D** hdphi = new TH1D*[nhist];
-  for(int l=0;l<nhist;l++) 
-    {
-      hdphi[l] = (TH1D*)infD->Get(histname[l]);
-      hdphi[l]->Sumw2();
-      xjjrootuti::setthgr(hdphi[l]);
-      xjjrootuti::setthgrstyle(hdphi[l], hcolor[l]);
-    }
 
-  TH1D** hmass = new TH1D*[nDphiBins];
+  TH1D* hdphi[nhist];
+  for(int l=0;l<nhist;l++) hdphi[l] = (TH1D*)infD->Get(Form("hdphi_%s",histname[l].Data()));
+  TH1D* hdphi_fit[nhist];
+  for(int l=0;l<nhist;l++) hdphi_fit[l] = new TH1D(Form("hdphi_%s_fit",histname.Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins, dphiBins);
+  TH1D* hmass[nhist][nDphiBins];
   TH1D** hmassSignal = new TH1D*[nDphiBins];
   TH1D** hmassSwapped = new TH1D*[nDphiBins];
-  Float_t* fitresult = new Float_t[2];
-  TH1D* hdphi_all_fit = new TH1D("hdphi_all_fit",";#Delta#phi;Entries", nDphiBins, minDphi, maxDphi);
-  xjjrootuti::setthgr(hdphi_all_fit);
-  xjjrootuti::setthgrstyle(hdphi_all_fit, kRed+1);
 
   for(int i=0;i<nDphiBins;i++) 
     {
-      hmass[i] = (TH1D*)infD->Get(Form("hmass_%d",i));  
       hmassSignal[i] = (TH1D*)infS->Get(Form("hmassSignal_%d",i));
       hmassSwapped[i] = (TH1D*)infS->Get(Form("hmassSwapped_%d",i));
-      Float_t dphimin = dphiBins[i], dphimax = dphiBins[i+1];
-      TF1* fmass = fit(hmass[i], hmassSignal[i], hmassSwapped[i], 
-                       Form("plotfits/cmass_%s_dphi_%d",outplotname.Data(),i), fitresult, collisionsyst,
-                       leading_ptmin, other_ptmin, dphimin, dphimax, leading_trkptmin,
-                       false);
-      hdphi_all_fit->SetBinContent(i+1, fmass->Integral(minhisto,maxhisto)/binwidthmass);
-      hdphi_all_fit->SetBinError(i+1, fmass->Integral(minhisto,maxhisto)/binwidthmass*fmass->GetParError(0)/fmass->GetParameter(0));
-      delete fmass;
+      for(int l=0;l<nhist;l++)
+        {
+          if(!histsave[l]) continue;
+          hmass[l][i] = (TH1D*)infD->Get(Form("hmass_%s_%d",histname[l].Data(),i));  
+          std::vector<TString> vtex = {TString::Format("%.2f < #Delta#phi < %.2f",dphiBins[i],dphiBins[i+1]), 
+                                       TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()),
+                                       "|y^{D}| < 1",
+                                       TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()),
+                                       TString::Format("p_{T}^{D} > %s GeV/c",xjjuti::number_remove_zero(other_ptmin).c_str())};
+          xjjroot::dfitter* dft = new xjjroot::dfitter();
+          dft->SetSidebandL(dmass_sideband_l);
+          dft->SetSidebandH(dmass_sideband_h);
+          dft->fit(hmass[l][i], hmassSignal[i], hmassSwapped[i], collisionsyst, Form("plotfits/cmass_%s_%s_dphi_%d",outplotname.Data(),histname[l].Data(),i), vtex);
+          hdphi_fit[l]->SetBinContent(i+1, dft->GetY());
+          hdphi_fit[l]->SetBinError(i+1, dft->GetYE());
+          delete dft;
+        }
     }
-  hdphi_all_fit->Scale(nDphiBins*1./nDphiBins_fine);
+  for(int l=0;l<nhist;l++) xjjroot::dividebinwid(hdphi_fit[l]);
 
-  TH2F* hempty = new TH2F("hempty", ";#Delta#phi;Entries", nDphiBins, minDphi, maxDphi, 10, (isMC?std::max(hdphi[1]->GetMinimum(),(double)1):std::max(hdphi_all_fit->GetMinimum(),(double)1))*0.1, hdphi[0]->GetMaximum()*5);
-  xjjrootuti::sethempty(hempty);
+  TH1D* hmassSignalLD = (TH1D*)infS->Get("hmassSignalLD");
+  TH1D* hmassSwappedLD = (TH1D*)infS->Get("hmassSwappedLD");
+  TH1D* hmassLD = (TH1D*)infD->Get("hmassLD");
+
+  xjjroot::dfitter* dftLD = new xjjroot::dfitter("YD");
+  dftLD->SetSidebandL(dmass_sideband_l);
+  dftLD->SetSidebandH(dmass_sideband_h);
+  std::vector<TString> vtexLD = {TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()),
+                                 "|y^{D}_{lead}| < 1",
+                                 TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str())};
+  dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_%s",outplotname.Data()), vtexLD);
+  Float_t sidebandscale = (dftLD->GetFun_background()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_background()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO-dmass_sideband_h)) / dftLD->GetFun_background()->Integral();
+  hdphi[6]->Scale(sidebandscale);
+  hdphi[7]->Scale(sidebandscale);
+  hdphi_fit[6]->Scale(sidebandscale);
+
+  TH1D* hdphi_subtract_all_fit = (TH1D*)hdphi_fit[0]->Clone("hdphi_subtract_all_fit");
+  hdphi_subtract_all_fit->Add(hdphi_fit[6], -1);
+
+
+  //
+  const int nhistdraw = 5;
+  TH1D* histdraw[nhistdraw] = {hdphi[0], hdphi[3], hdphi_subtract_all_fit, hdphi[1], hdphi_fit[0]};
+  for(int k=0;k<nhistdraw;k++) xjjroot::setthgr(histdraw[k], histcolor->at(histdraw[k]->GetName()));
+
+
+  //
+
+  TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, (isMC?std::max(hdphi[3]->GetMinimum(),(double)1):std::max(hdphi_subtract_all_fit->GetMinimum(),(double)1))*0.1, hdphi[0]->GetMaximum()*5);
+  xjjroot::sethempty(hempty);
   TCanvas* cdphi = new TCanvas("cdphi","",600,600);
   cdphi->SetLogy();
   hempty->Draw();
   int n_objects = 0;
-  for(int l=0;l<nhist;l++)
+  for(int k=0;k<nhistdraw;k++)
     {
-      if(l && (l==3 || !isMC)) continue;
-      hdphi[l]->Draw("pe same");
+      histdraw[k]->Draw("pe same");
       n_objects++;
     }
-  hdphi_all_fit->Draw("pe same");
-  n_objects++;
   
   TLegend* leg = new TLegend(0.55, 0.88-0.06*n_objects, 0.82, 0.88,NULL,"brNDC");
-  for(int l=0;l<nhist;l++)
-    {
-      if(l && (l==3 || !isMC)) continue;
-      leg->AddEntry(hdphi[l], histleg[l], "p");
-    }
-  leg->AddEntry(hdphi_all_fit, "all D_{lead}, fit ext D", "p");
+  for(int k=0;k<nhistdraw;k++) leg->AddEntry(histdraw[k], histleg->at(histdraw[k]->GetName()), "p");
   xjjrootuti::setlegndraw(leg);
 
   xjjrootuti::drawCMS(collisionsyst);
-  float texypos = xjjrootuti::y_tex_left_top, texxpos = xjjrootuti::x_tex_left_top + 0.01;
-  TLatex* textrkpt = new TLatex(xjjrootuti::x_tex_left_top,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()));
-  xjjrootuti::settexndraw(textrkpt);
-  TLatex* texrap = new TLatex(texxpos,texypos=(texypos-xjjrootuti::dy_tex_left_top),"|y^{D}| < 1");
-  xjjrootuti::settexndraw(texrap);
-  TLatex* texleadpt = new TLatex(texxpos,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()));
-  xjjrootuti::settexndraw(texleadpt);
-  TLatex* texpt = new TLatex(texxpos ,texypos=(texypos-xjjrootuti::dy_tex_left_top),Form("p_{T}^{D} > %s GeV/c",xjjuti::number_remove_zero(other_ptmin).c_str()));
-  xjjrootuti::settexndraw(texpt);
+  Float_t texypos = xjjrootuti::y_tex_left_top, texxpos = xjjrootuti::x_tex_left_top;
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), "|y^{D}| < 1");
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));
   cdphi->SaveAs(Form("plots/cdphi_%s.pdf",outplotname.Data()));
 
   return 0;
