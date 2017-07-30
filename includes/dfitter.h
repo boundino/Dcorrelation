@@ -41,6 +41,9 @@ namespace xjjroot
     void SetSidebandL(Double_t d_mass_sideband_l_) {d_mass_sideband_l = d_mass_sideband_l_; calvar();}
     void SetSidebandH(Double_t d_mass_sideband_h_) {d_mass_sideband_h = d_mass_sideband_h_; calvar();}
     
+    Double_t GetMassL() const {return min_hist_dzero;}
+    Double_t GetMassH() const {return max_hist_dzero;}
+
   private:
     const Int_t npar = 12;
     
