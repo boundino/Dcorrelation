@@ -12,7 +12,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   TH1D* hdphi[nhist];
   for(int l=0;l<nhist;l++) hdphi[l] = (TH1D*)infD->Get(Form("hdphi_%s",histname[l].Data()));
   TH1D* hdphi_fit[nhist];
-  for(int l=0;l<nhist;l++) hdphi_fit[l] = new TH1D(Form("hdphi_%s_fit",histname.Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins, dphiBins);
+  for(int l=0;l<nhist;l++) hdphi_fit[l] = new TH1D(Form("hdphi_%s_fit",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins, dphiBins);
   TH1D* hmass[nhist][nDphiBins];
   TH1D** hmassSignal = new TH1D*[nDphiBins];
   TH1D** hmassSwapped = new TH1D*[nDphiBins];
@@ -26,10 +26,10 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
           if(!histsave[l]) continue;
           hmass[l][i] = (TH1D*)infD->Get(Form("hmass_%s_%d",histname[l].Data(),i));  
           std::vector<TString> vtex = {TString::Format("%.2f < #Delta#phi < %.2f",dphiBins[i],dphiBins[i+1]), 
-                                       TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()),
+                                       TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
                                        "|y^{D}| < 1",
-                                       TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str()),
-                                       TString::Format("p_{T}^{D} > %s GeV/c",xjjuti::number_remove_zero(other_ptmin).c_str())};
+                                       TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()),
+                                       TString::Format("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str())};
           xjjroot::dfitter* dft = new xjjroot::dfitter();
           dft->SetSidebandL(dmass_sideband_l);
           dft->SetSidebandH(dmass_sideband_h);
@@ -48,23 +48,23 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   xjjroot::dfitter* dftLD = new xjjroot::dfitter("YD");
   dftLD->SetSidebandL(dmass_sideband_l);
   dftLD->SetSidebandH(dmass_sideband_h);
-  std::vector<TString> vtexLD = {TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjuti::number_remove_zero(leading_trkptmin).c_str()),
+  std::vector<TString> vtexLD = {TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
                                  "|y^{D}_{lead}| < 1",
-                                 TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjuti::number_remove_zero(leading_ptmin).c_str())};
+                                 TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())};
   dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_%s",outplotname.Data()), vtexLD);
-  Float_t sidebandscale = (dftLD->GetFun_background()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_background()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO-dmass_sideband_h)) / dftLD->GetFun_background()->Integral();
-  hdphi[6]->Scale(sidebandscale);
-  hdphi[7]->Scale(sidebandscale);
-  hdphi_fit[6]->Scale(sidebandscale);
+  Float_t sidebandscale = (dftLD->GetFun_f()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_f()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO-dmass_sideband_h)) / dftLD->GetFun_not_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH());
+  hdphi[4]->Scale(1./sidebandscale);
+  hdphi[5]->Scale(1./sidebandscale);
+  hdphi_fit[4]->Scale(1./sidebandscale);
 
   TH1D* hdphi_subtract_all_fit = (TH1D*)hdphi_fit[0]->Clone("hdphi_subtract_all_fit");
-  hdphi_subtract_all_fit->Add(hdphi_fit[6], -1);
+  hdphi_subtract_all_fit->Add(hdphi_fit[4], -1.);
 
 
   //
   const int nhistdraw = 5;
   TH1D* histdraw[nhistdraw] = {hdphi[0], hdphi[3], hdphi_subtract_all_fit, hdphi[1], hdphi_fit[0]};
-  for(int k=0;k<nhistdraw;k++) xjjroot::setthgr(histdraw[k], histcolor->at(histdraw[k]->GetName()));
+  for(int k=0;k<nhistdraw;k++) xjjroot::setthgrstyle(histdraw[k], histcolor.at(histdraw[k]->GetName()), 20, 1.1);
 
 
   //
@@ -82,15 +82,15 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
     }
   
   TLegend* leg = new TLegend(0.55, 0.88-0.06*n_objects, 0.82, 0.88,NULL,"brNDC");
-  for(int k=0;k<nhistdraw;k++) leg->AddEntry(histdraw[k], histleg->at(histdraw[k]->GetName()), "p");
-  xjjrootuti::setlegndraw(leg);
+  for(int k=0;k<nhistdraw;k++) leg->AddEntry(histdraw[k], histleg.at(histdraw[k]->GetName()), "p");
+  xjjroot::setlegndraw(leg);
 
-  xjjrootuti::drawCMS(collisionsyst);
-  Float_t texypos = xjjrootuti::y_tex_left_top, texxpos = xjjrootuti::x_tex_left_top;
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), "|y^{D}| < 1");
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjrootuti::dy_tex_left_top), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));
+  xjjroot::drawCMS(collisionsyst);
+  Float_t texypos = xjjroot::y_tex_left_top, texxpos = xjjroot::x_tex_left_top;
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), "|y^{D}| < 1");
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
+  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));
   cdphi->SaveAs(Form("plots/cdphi_%s.pdf",outplotname.Data()));
 
   return 0;

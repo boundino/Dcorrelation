@@ -6,6 +6,7 @@
 #include "../includes/readD.h"
 #include "../includes/dfitter.h"
 #include <TFile.h>
+#include <TH2F.h>
 
 const int MAX_XB = 20000;
 const int MAX_GEN = 6000;
@@ -24,12 +25,20 @@ const int nDphiBins = 10;
 Float_t dphiBins[nDphiBins+1];
 const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
-const int nhist = 8;
-TString histname[nhist] = {"all_all", "all_signal", "signal_all", "signal_signal", "signalreg_all", "signalreg_signal", "sideband_all", "sideband_signal"};
-Bool_t  histsave[nhist] = {true,      false,        true,         false,           true,            false,              true,           false};
+const int nhist = 6;
+TString histname[nhist] = {"all_all", "all_signal", "signal_all", "signal_signal", "sideband_all", "sideband_signal"};
+Bool_t  histsave[nhist] = {true,      false,        true,         false,           true,           false};
 
-std::map<char*, Color_t> histcolor = {{"hdphi_all_all", kBlack}, {"hdphi_signal_signal", kGreen+3}, {"hdphi_all_signal", kAzure-6}, {"hdphi_all_all_fit", kRed}, {"hdphi_subtract_all_fit", kMagenta+3}};
-std::map<char*, TString> histleg = {{"hdphi_all_all", "all D_{lead}, all D"}, {"hdphi_signal_signal", "g-mat D_{lead}, g-mat D"}, {"hdphi_all_signal", "all D_{lead}, g-mat D"}, {"hdphi_all_all_fit", "all D_{lead}", "fit D"}, {"hdphi_subtract_all_fit", "bkg sub D_{lead}, fit D"}}
+std::map<TString, Color_t> histcolor = {{"hdphi_all_all", kBlack}, 
+                                        {"hdphi_signal_signal", kGreen+3}, 
+                                        {"hdphi_all_signal", kAzure-6}, 
+                                        {"hdphi_all_all_fit", kRed}, 
+                                        {"hdphi_subtract_all_fit", kMagenta+3}};
+std::map<TString, TString> histleg = {{"hdphi_all_all", "all D_{lead}, all D"}, 
+                                      {"hdphi_signal_signal", "g-mat D_{lead}, g-mat D"}, 
+                                      {"hdphi_all_signal", "all D_{lead}, g-mat D"}, 
+                                      {"hdphi_all_all_fit", "all D_{lead}, fit D"}, 
+                                      {"hdphi_subtract_all_fit", "bkg sub D_{lead}, fit D"}};
 
 //
 std::vector<TString> cutval_list_skim_pp = {"pBeamScrapingFilter", "pPAprimaryVertexFilter"};

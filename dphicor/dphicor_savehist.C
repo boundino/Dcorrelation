@@ -59,7 +59,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(err_initcutval_ptdep) return 1;
           dcand.settrkcut(leading_trkptmin, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
-          if(dcand.isselected(j))
+          if(dcand.isselected(j) && dcand.Dmass[j] > 1.7 && dcand.Dmass[j] < 2.0)
             {
               if(dcand.Dpt[j]>ptleading)
                 {
@@ -76,15 +76,12 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(dcand.Dgen[j]==23333) dphi[3].insert(std::pair<int, float>(j, dcand.Dphi[j]));
           dphi[4].insert(std::pair<int, float>(j, dcand.Dphi[j]));
           if(dcand.Dgen[j]==23333) dphi[5].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          dphi[6].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          if(dcand.Dgen[j]==23333) dphi[7].insert(std::pair<int, float>(j, dcand.Dphi[j]));
         }
       // fill dphi
       if(jleading<0) continue;
       hmassLD->Fill(dcand.Dmass[jleading]);
       Bool_t leadingsel[nhist] = {true, true, 
                                   dcand.Dgen[jleading]==23333, dcand.Dgen[jleading]==23333, 
-                                  TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_signalreg, TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_signalreg,
                                   TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h, TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h};
       for(int l=0;l<nhist;l++)
         {
