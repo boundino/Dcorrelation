@@ -222,7 +222,7 @@ TF1* xjjroot::dfitter::fit(const TH1* hmass, const TH1* hmassMCSignal, const TH1
   drawleg(h);
   drawCMS(collisionsyst);
 
-  Float_t texxpos = 0.22, texypos = 0.90, texdypos = 0.053;
+  Float_t texxpos = 0.22, texypos = 0.90, texdypos = 0.055;
   if(!vtex.empty())
     {
       for(std::vector<TString>::const_iterator it=vtex.begin(); it!=vtex.end(); it++) 

@@ -66,45 +66,64 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   hdphi_subtract_signal->Add(ahdphi[5], -1.);
 
   //
-  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi_fit[0], ahdphi[3], hdphi_subtract_signal, hdphi_subtract_all_fit};
-  Int_t nhistdraw = ahistdraw.size();
+  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi[3], ahdphi_fit[0], hdphi_subtract_signal, hdphi_subtract_all_fit};
+  const int nhistdraw = ahistdraw.size();
   Float_t yaxismin = ahistdraw[0]->GetMinimum(), yaxismax = ahistdraw[0]->GetMaximum();
   for(int k=0;k<nhistdraw;k++) 
     {
-      if(histcolor.find(ahistdraw[k]->GetName())==histcolor.end()) return 1;
-      xjjroot::setthgrstyle(ahistdraw[k], histcolor.at(ahistdraw[k]->GetName()), 20, 1.1);
+      if(histstyle.find(ahistdraw[k]->GetName())==histstyle.end()) return 1;
+      xjjroot::setthgrstyle(ahistdraw[k], histstyle.at(ahistdraw[k]->GetName()));
       if(ahistdraw[k]->GetMinimum()<yaxismin) yaxismin = ahistdraw[k]->GetMinimum();
       if(ahistdraw[k]->GetMaximum()>yaxismax) yaxismax = ahistdraw[k]->GetMaximum();
     }
 
   //  
-  TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, (yaxismin>0?yaxismin:1)*1.e-1, yaxismax*1.e+1);
+  TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, (yaxismin>0?yaxismin:1)*1.e-1, yaxismax*5.e+1);
   xjjroot::sethempty(hempty);
-  TCanvas* cdphi = new TCanvas("cdphi","",600,600);
-  cdphi->SetLogy();
-  hempty->Draw();
-  int n_objects = 0;
-  for(int k=0;k<nhistdraw;k++)
-    {
-      ahistdraw[k]->Draw("pe same");
-      n_objects++;
-    }
-  
-  TLegend* leg = new TLegend(0.55, 0.88-0.06*n_objects, 0.82, 0.88, NULL,"brNDC");
-  for(int k=0;k<nhistdraw;k++) 
-    {
-      if(histleg.find(ahistdraw[k]->GetName())==histleg.end()) return 1;
-      leg->AddEntry(ahistdraw[k], histleg.at(ahistdraw[k]->GetName()), "p");
-    }
-  xjjroot::setlegndraw(leg);
 
-  xjjroot::drawCMS(collisionsyst);
-  Float_t texypos = xjjroot::y_tex_left_top, texxpos = xjjroot::x_tex_left_top;
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), "|y^{D}| < 1");
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
-  xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));
-  cdphi->SaveAs(Form("plots/cdphi_%s.pdf",outplotname.Data()));
+  Int_t ncanvdraw = 4;
+  TString canvdraw[ncanvdraw] = {"base", "bkgsub", "fitext", "final"};
+  bool ifdrawhist[ncanvdraw][nhistdraw] = {
+    {true,  true,  true,  false,  false,  false},
+    {true,  true,  true,  false,  true,   false},
+    {true,  true,  true,  true,   false,  false},
+    {true,  true,  true,  false,  false,  true}
+  };
+
+  //
+  for(int i=0;i<ncanvdraw;i++)
+    {
+      TCanvas* cdphi = new TCanvas("cdphi","",600,600);
+      cdphi->SetLogy();
+      hempty->Draw();
+      int n_objects = 0;
+      for(int k=0;k<nhistdraw;k++)
+        {
+          if(!ifdrawhist[i][k]) continue;
+          ahistdraw[k]->Draw(Form("%s same", histstyle.at(ahistdraw[k]->GetName()).GetOption().Data()));
+          n_objects++;
+        }
+      TLegend* leg = new TLegend(0.55, 0.88-0.06*n_objects, 0.82, 0.88, NULL, "brNDC");
+      for(int k=0;k<nhistdraw;k++) 
+        {
+          if(!ifdrawhist[i][k]) continue;
+          if(histleg.find(ahistdraw[k]->GetName())==histleg.end()) return 1;
+          TString legopt = histstyle.at(ahistdraw[k]->GetName()).GetOption().Contains("hist")?"f":"p";
+          leg->AddEntry(ahistdraw[k], histleg.at(ahistdraw[k]->GetName()), legopt.Data());
+        }
+      xjjroot::setlegndraw(leg);
+      
+      xjjroot::drawCMS(collisionsyst);
+      Float_t texypos = xjjroot::y_tex_left_top, texxpos = xjjroot::x_tex_left_top;
+      xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
+      xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), "|y^{D}| < 1");
+      xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
+      xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));
+      cdphi->SaveAs(Form("plots/cdphi_%s_%s.pdf", outplotname.Data(), canvdraw[i].Data()));
+      delete cdphi;
+    }
+
+  //
 
   return 0;
 }

@@ -2,21 +2,21 @@
 # dophicor.sh #
 
 # -1: loop all bins
-jCOLSYST=-1
-lLEAD=2
+jCOLSYST=0
+lLEAD=-1
 kOTHER=-1
 #
-DO_DPHICOR_SAVEFITTPL=1
-DO_DPHICOR_SAVEHIST=1
-DO_DPHICOR_USEHIST=0
+DO_DPHICOR_SAVEFITTPL=0
+DO_DPHICOR_SAVEHIST=${1:-0}
+DO_DPHICOR_USEHIST=${2:-0}
 
 # nCOL loop
 COLSYST=('pp' 'pp' 'PbPb' 'PbPb')
 ISMC=(1 0 1 0)
 NEEDFITTPL=(1 0 1 0)
 # nLEAD loop
-LEADING_TRKPTMIN=(1 5 8)
-LEADING_PTMIN=(20 20 20)
+LEADING_TRKPTMIN=(1)
+LEADING_PTMIN=(20)
 # nOTHER loop
 OTHER_PTMIN=(2)
 
@@ -28,7 +28,6 @@ INPUTSNAME=("/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_Dfinder
     "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
     "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
     "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root")
-
 
 # Do not touch the macros below if you don't know what they mean #
 ##
@@ -64,7 +63,7 @@ function float_to_string()
     echo $rt_float_to_string
 }
 
-function run_this_bin()
+function run_this_bin() 
 {
     if [[ $# -ne 2 ]]
     then

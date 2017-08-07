@@ -5,8 +5,10 @@
 #include "../includes/xjjrootuti.h"
 #include "../includes/readD.h"
 #include "../includes/dfitter.h"
+#include "../includes/thgrstyle.h"
 #include <TFile.h>
 #include <TH2F.h>
+#include <TColor.h>
 
 const int MAX_XB = 20000;
 const int MAX_GEN = 6000;
@@ -18,7 +20,7 @@ Float_t dmass_sideband_h = 0.12;
 
 const int nPtBins = 10;
 Float_t ptBins[nPtBins+1] = {2, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
-const int nDphiBins_fine = 50;
+const int nDphiBins_fine = 20; // 50
 Float_t minDphi = 0;
 Float_t maxDphi = M_PI;
 const int nDphiBins = 10;
@@ -28,24 +30,24 @@ std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
 const int nhist = 6;
 TString histname[nhist] = {"all_all", "all_signal", "signal_all", "signal_signal", "sideband_all", "sideband_signal"};
 Bool_t  histsave[nhist] = {true,      false,        true,         false,           true,           false};
-// Bool_t  histsave[nhist] = {true,      true,         true,         true,            true,           true};
 
 //
-std::map<TString, Color_t> histcolor = {
-  {"hdphi_all_all",           kBlack},    
-  {"hdphi_all_signal",        kAzure-6},  
-  {"hdphi_all_all_fit",       kRed},      
-  {"hdphi_signal_signal",     kGreen+3},  
-  {"hdphi_subtract_signal",   kBlue},
-  {"hdphi_subtract_all_fit",  kMagenta+3}
+std::map<TString, xjjroot::thgrstyle> histstyle = {
+  {"hdphi_all_all",           xjjroot::thgrstyle(-1,       -1,  -1,   kBlack,    1,  2,  kGray+1,   -1,  1001,  "hist")},
+  {"hdphi_all_signal",        xjjroot::thgrstyle(-1,       -1,  -1,   kAzure-6,  1,  2,  kAzure-5,  -1,  1001,  "hist")},
+  {"hdphi_all_all_fit",       xjjroot::thgrstyle(kOrange,  20,  1.1,  kOrange,   1,  1,  -1,        -1,  -1,    "pe")},
+  {"hdphi_signal_signal",     xjjroot::thgrstyle(-1,       -1,  -1,   kGreen+3,  1,  2,  kGreen-5,  -1,  1001,  "hist")},
+  {"hdphi_subtract_signal",   xjjroot::thgrstyle(kPink+1,  20,  1.1,  kPink+1,   1,  1,  -1,        -1,  -1,    "pe")},
+  {"hdphi_subtract_all_fit",  xjjroot::thgrstyle(TColor::GetColor("#ed5e5e"),   20,  1.1,  TColor::GetColor("#ed5e5e"),    1,  1,  -1,        -1,  -1,    "pe")}
 };
+
 std::map<TString, TString> histleg = {
   {"hdphi_all_all",           "all D_{lead}, all D"}, 
   {"hdphi_all_signal",        "all D_{lead}, g-mat D"}, 
   {"hdphi_all_all_fit",       "all D_{lead}, fit D"}, 
   {"hdphi_signal_signal",     "g-mat D_{lead}, g-mat D"}, 
-  {"hdphi_subtract_signal",   "bkg sub D_{lead}, g-mat D"}, 
-  {"hdphi_subtract_all_fit",  "bkg sub D_{lead}, fit D"}
+  {"hdphi_subtract_signal",   "bkgsub D_{lead}, g-mat D"}, 
+  {"hdphi_subtract_all_fit",  "bkgsub D_{lead}, fit D"}
 };
 //
 std::vector<TString> cutval_list_skim_pp = {"pBeamScrapingFilter", "pPAprimaryVertexFilter"};
