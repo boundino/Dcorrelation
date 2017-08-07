@@ -23,12 +23,14 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
   int* val_skim = new int[cutval_skim.size()];
   for(int k=0;k<cutval_skim.size();k++) xjjroot::setbranchaddress(ntSkim, cutval_skim[k].Data(), &val_skim[k]);
   
-  TH1D* hdphi[nhist];
-  TH1D* hmass[nhist][nDphiBins];
+  TH1D* ahdphi[nhist];
+  TH1D* ahmassLD[nhist];
+  TH1D* ahmass[nhist][nDphiBins];
   for(int l=0;l<nhist;l++) 
     {
-      hdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins_fine, 0, M_PI);
-      for(int i=0;i<nDphiBins;i++) hmass[l][i] = new TH1D(Form("hmass_%s_%d",histname[l].Data(),i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+      ahdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins_fine, 0, M_PI);
+      ahmassLD[l] = new TH1D(Form("hmassLD_%s",histname[l].Data()), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
+      for(int i=0;i<nDphiBins;i++) ahmass[l][i] = new TH1D(Form("hmass_%s_%d",histname[l].Data(),i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
     }
   TH1D* hmassLD = new TH1D("hmassLD", ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
   
@@ -85,32 +87,35 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
                                   TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h, TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h};
       for(int l=0;l<nhist;l++)
         {
-          if(!leadingsel[l] || dphi[l].empty()) continue;
+          if(!leadingsel[l]) continue;
+          ahmassLD[l]->Fill(dcand.Dmass[jleading]);
+          if(dphi[l].empty()) continue;
           for(std::map<int, float>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
               if(it->first==jleading) continue;
               float deltaphi = TMath::Abs(it->second - dcand.Dphi[jleading]);
               float filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
-              hdphi[l]->Fill(filldeltaphi);
+              ahdphi[l]->Fill(filldeltaphi);
               if(!histsave[l]) continue;
               int idphi = xjjc::findibin(&dphiBins, filldeltaphi);
               if(idphi<0) return 1;
-              hmass[l][idphi]->Fill(dcand.Dmass[it->first]);
+              ahmass[l][idphi]->Fill(dcand.Dmass[it->first]);
             }
         }
     }
   xjjc::progressbar_summary(nentries);
   
-  for(int l=0;l<nhist;l++) xjjroot::dividebinwid(hdphi[l]);
+  for(int l=0;l<nhist;l++) xjjroot::dividebinwid(ahdphi[l]);
 
   TFile* outf = new TFile(Form("%s.root",outfname.Data()),"recreate");
   outf->cd();
   hmassLD->Write();
   for(int l=0;l<nhist;l++)
     {
-      hdphi[l]->Write();
+      ahdphi[l]->Write();
+      ahmassLD[l]->Write();
       if(!histsave[l]) continue;
-      for(int i=0;i<nDphiBins;i++) hmass[l][i]->Write();
+      for(int i=0;i<nDphiBins;i++) ahmass[l][i]->Write();
     }
   outf->Write();
   outf->Close();
