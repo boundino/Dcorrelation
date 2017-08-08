@@ -4,7 +4,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
 {
   xjjroot::setgstyle();
 
-  for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
+  initbinning();
 
   TFile* infD = new TFile(Form("%s.root",outfDname.Data()));
   TFile* infS = new TFile(Form("%s.root",outffittpl.Data()));
@@ -62,11 +62,17 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
 
   TH1D* hdphi_subtract_all_fit = (TH1D*)ahdphi_fit[0]->Clone("hdphi_subtract_all_fit");
   hdphi_subtract_all_fit->Add(ahdphi_fit[4], -1.);
-  TH1D* hdphi_subtract_signal = (TH1D*)ahdphi[1]->Clone("hdphi_subtract_signal");
-  hdphi_subtract_signal->Add(ahdphi[5], -1.);
+  
+  // TH1D* hdphi_subtract_signal = (TH1D*)ahdphi[1]->Clone("hdphi_subtract_signal");
+  // hdphi_subtract_signal->Add(ahdphi[5], -1.);  
 
-  //
-  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi[3], ahdphi_fit[0], hdphi_subtract_signal, hdphi_subtract_all_fit};
+  TH1D* hdphi_all_signal_rebin = rebindiffhist(ahdphi[1], nDphiBins, dphiBins, "hdphi_all_signal_rebin");
+  TH1D* hdphi_sideband_signal_rebin = rebindiffhist(ahdphi[5], nDphiBins, dphiBins, "hdphi_sideband_signal_rebin");
+  TH1D* hdphi_subtract_signal_rebin = (TH1D*)hdphi_all_signal_rebin->Clone("hdphi_subtract_signal_rebin");
+  hdphi_subtract_signal_rebin->Add(hdphi_sideband_signal_rebin, -1.);
+
+  // all hists are prepared
+  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi[3], ahdphi_fit[0], hdphi_subtract_signal_rebin, hdphi_subtract_all_fit};
   const int nhistdraw = ahistdraw.size();
   Float_t yaxismin = ahistdraw[0]->GetMinimum(), yaxismax = ahistdraw[0]->GetMaximum();
   for(int k=0;k<nhistdraw;k++) 
@@ -119,6 +125,8 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
       xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), "|y^{D}| < 1");
       xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
       xjjroot::drawtex(texxpos, texypos=(texypos-xjjroot::dy_tex_left_top), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));
+
+      cdphi->RedrawAxis();
       cdphi->SaveAs(Form("plots/cdphi_%s_%s.pdf", outplotname.Data(), canvdraw[i].Data()));
       delete cdphi;
     }
