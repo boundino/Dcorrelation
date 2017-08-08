@@ -5,7 +5,7 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
   std::cout<<std::endl;
   initcutval(collisionsyst);
 
-  for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
+  initbinning();
 
   TFile* inf = new TFile(infname);
   TTree* ntDkpi = (TTree*)inf->Get("ntDkpi");
@@ -48,11 +48,11 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
       if(TMath::Abs(dcand.PVz)>15) continue;
       
       int jleading = -1;
-      float ptleading = 0;
-      std::map<int, float> dphi;
+      double ptleading = 0;
+      std::map<int, double> dphi;
       for(int j=0;j<dcand.Dsize;j++)
         {
-          int ipt = xjjc::findibin(&ptBins, dcand.Dpt[j]);
+          int ipt = xjjc::findibin(&ptBins, (double)dcand.Dpt[j]);
           if(ipt<0) continue;
           int err_initcutval_ptdep = initcutval_ptdep(collisionsyst, ipt);
           if(err_initcutval_ptdep) return 1;
@@ -66,15 +66,15 @@ int dphicor_savefittpl(TString infname, TString outfname, TString collisionsyst,
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
           if(!dcand.isselected(j)) continue;
-          dphi.insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          dphi.insert(std::pair<int, double>(j, dcand.Dphi[j]));
         }
       if(jleading<0) continue;
       if(dcand.Dgen[jleading]==23333) hmassSignalLD->Fill(dcand.Dmass[jleading]);
       if(dcand.Dgen[jleading]==23344) hmassSwappedLD->Fill(dcand.Dmass[jleading]);
-      for(std::map<int, float>::iterator it=dphi.begin(); it!=dphi.end(); it++)
+      for(std::map<int, double>::iterator it=dphi.begin(); it!=dphi.end(); it++)
         {
-          float deltaphi = TMath::Abs(it->second - dphi.at(jleading));
-          float filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
+          double deltaphi = TMath::Abs(it->second - dphi.at(jleading));
+          double filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
           if(it->first==jleading) continue;
           int idphi = xjjc::findibin(&dphiBins, filldeltaphi);
           if(idphi<0) return 1;

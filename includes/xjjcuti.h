@@ -14,8 +14,8 @@
 namespace xjjc
 {
   template<size_t N, typename T> void initarray(T (*array_)[N], T initval_=0);
-  template<size_t N> int findibin(const float (*array_)[N], float element_);
-  template<size_t N> int findiedge(const float (*array_)[N], float element_);
+  template<size_t N, typename T> int findibin(const T (*array_)[N], T element_);
+  template<size_t N, typename T> int findiedge(const T (*array_)[N], T element_);
   template<typename T> std::string number_to_string(T param_);
   template<typename T> std::string number_remove_zero(T param_);
   void progressbar(int index_, int total_, int morespace_=0);
@@ -34,8 +34,8 @@ void xjjc::initarray(T (*array_)[N], T initval_/*=0*/)
     }
 }
 
-template<size_t N>
-int xjjc::findibin(const float (*array_)[N], float element_)
+template<size_t N, typename T>
+int xjjc::findibin(const T (*array_)[N], T element_)
 {
   int ielement = -1;
   for(std::size_t i=0;i<((sizeof(*array_)/sizeof((*array_)[0]))-1) && ielement<0;i++)
@@ -45,8 +45,8 @@ int xjjc::findibin(const float (*array_)[N], float element_)
   return ielement;
 }
 
-template<size_t N>
-int xjjc::findiedge(const float (*array_)[N], float element_)
+template<size_t N, typename T>
+int xjjc::findiedge(const T (*array_)[N], T element_)
 {
   int ielement = -1;
   for(std::size_t i=0;i<(sizeof(*array_)/sizeof((*array_)[0])) && ielement<0;i++)

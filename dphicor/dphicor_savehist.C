@@ -5,7 +5,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
   std::cout<<std::endl;
   initcutval(collisionsyst);
   
-  for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
+  initbinning();
   
   TFile* inf = new TFile(infname);
   TTree* ntDkpi = (TTree*)inf->Get("ntDkpi");
@@ -51,11 +51,11 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
       
       // find leading D
       int jleading = -1;
-      float ptleading = 0;
-      std::map<int, float> dphi[nhist];
+      double ptleading = 0;
+      std::map<int, double> dphi[nhist];
       for(int j=0;j<dcand.Dsize;j++)
         {
-          int ipt = xjjc::findibin(&ptBins, dcand.Dpt[j]);
+          int ipt = xjjc::findibin(&ptBins, (double)dcand.Dpt[j]);
           if(ipt<0) continue;
           int err_initcutval_ptdep = initcutval_ptdep(collisionsyst, ipt);
           if(err_initcutval_ptdep) return 1;
@@ -72,12 +72,12 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
           if(!dcand.isselected(j)) continue;
-          dphi[0].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          if(dcand.Dgen[j]==23333) dphi[1].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          dphi[2].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          if(dcand.Dgen[j]==23333) dphi[3].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          dphi[4].insert(std::pair<int, float>(j, dcand.Dphi[j]));
-          if(dcand.Dgen[j]==23333) dphi[5].insert(std::pair<int, float>(j, dcand.Dphi[j]));
+          dphi[0].insert(std::pair<int, double>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) dphi[1].insert(std::pair<int, double>(j, dcand.Dphi[j]));
+          dphi[2].insert(std::pair<int, double>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) dphi[3].insert(std::pair<int, double>(j, dcand.Dphi[j]));
+          dphi[4].insert(std::pair<int, double>(j, dcand.Dphi[j]));
+          if(dcand.Dgen[j]==23333) dphi[5].insert(std::pair<int, double>(j, dcand.Dphi[j]));
         }
       // fill dphi
       if(jleading<0) continue;
@@ -90,11 +90,11 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(!leadingsel[l]) continue;
           ahmassLD[l]->Fill(dcand.Dmass[jleading]);
           if(dphi[l].empty()) continue;
-          for(std::map<int, float>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
+          for(std::map<int, double>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
               if(it->first==jleading) continue;
-              float deltaphi = TMath::Abs(it->second - dcand.Dphi[jleading]);
-              float filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
+              double deltaphi = TMath::Abs(it->second - dcand.Dphi[jleading]);
+              double filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
               ahdphi[l]->Fill(filldeltaphi);
               if(!histsave[l]) continue;
               int idphi = xjjc::findibin(&dphiBins, filldeltaphi);
