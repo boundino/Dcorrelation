@@ -14,11 +14,12 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   TH1D* hmassSwappedLD = (TH1D*)infS->Get("hmassSwappedLD");
   TH1D* hmassLD = (TH1D*)infD->Get("hmassLD");
 
-  xjjroot::dfitter* dftLD = new xjjroot::dfitter("YD");
+  xjjroot::dfitter* dftLD = new xjjroot::dfitter("3SC");
+  dftLD->SetTexLinespc(0.009);
   dftLD->SetSidebandL(dmass_sideband_l);
   dftLD->SetSidebandH(dmass_sideband_h);
   std::vector<TString> vtexLD = {TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
-                                 "|y^{D}_{lead}| < 1",
+                                 "|y^{D_{lead}}| < 1",
                                  TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())};
   dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_%s",outplotname.Data()), vtexLD);
   Float_t sidebandscale = dftLD->GetFun_not_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH()) / (dftLD->GetFun_f()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_f()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h));
