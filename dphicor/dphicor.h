@@ -34,12 +34,12 @@ Bool_t  histsave[nhist] = {true,      false,        true,         false,        
 
 //
 std::map<TString, xjjroot::thgrstyle> histstyle = {
-  {"hdphi_all_all",                xjjroot::thgrstyle(-1,                           -1,  -1,   kBlack,                       1,  2,  kGray+1,   -1,  1001,  "hist")},
-  {"hdphi_all_signal",             xjjroot::thgrstyle(-1,                           -1,  -1,   kAzure-6,                     1,  2,  kAzure-5,  -1,  1001,  "hist")},
-  {"hdphi_all_all_fit",            xjjroot::thgrstyle(kOrange,                      20,  1.1,  kOrange,                      1,  1,  -1,        -1,  -1,    "pe")},
-  {"hdphi_signal_signal",          xjjroot::thgrstyle(-1,                           -1,  -1,   kGreen+3,                     1,  2,  kGreen-5,  -1,  1001,  "hist")},
-  {"hdphi_subtract_signal_rebin",  xjjroot::thgrstyle(kPink+1,                      20,  1.1,  kPink+1,                      1,  1,  -1,        -1,  -1,    "pe")},
-  {"hdphi_subtract_all_fit",       xjjroot::thgrstyle(TColor::GetColor("#ed5e5e"),  20,  1.1,  TColor::GetColor("#ed5e5e"),  1,  1,  -1,        -1,  -1,    "pe")}
+  {"hdphi_all_all",                xjjroot::thgrstyle(-1,                           -1,  -1,   kBlack,                       1,  2,  kGray+1,   -1,  1001,  "hist")},  //  black
+  {"hdphi_all_signal",             xjjroot::thgrstyle(-1,                           -1,  -1,   kAzure-6,                     1,  2,  kAzure-5,  -1,  1001,  "hist")},  //  blue
+  {"hdphi_all_all_fit",            xjjroot::thgrstyle(kOrange,                      20,  1.1,  kOrange,                      1,  1,  -1,        -1,  -1,    "pe")},    //  yellow
+  {"hdphi_signal_signal",          xjjroot::thgrstyle(-1,                           -1,  -1,   kGreen+3,                     1,  2,  kGreen-5,  -1,  1001,  "hist")},  //  green
+  {"hdphi_subtract_signal_rebin",  xjjroot::thgrstyle(TColor::GetColor("#ff8faf"),  20,  1.1,  TColor::GetColor("#ff8faf"),  1,  1,  -1,        -1,  -1,    "pe")},    //  pink
+  {"hdphi_subtract_all_fit",       xjjroot::thgrstyle(TColor::GetColor("#ed5e5e"),  20,  1.1,  TColor::GetColor("#ed5e5e"),  1,  1,  -1,        -1,  -1,    "pe")}     //  red
 };
 
 std::map<TString, TString> histleg = {
@@ -121,7 +121,7 @@ TH1D* rebindiffhist(const TH1D* h, Int_t nnewbin, Double_t* newbin, TString newn
 {
   TH1D* h_mulbin = (TH1D*)h->Clone("h_mulbin");
   xjjroot::multiplebinwid(h_mulbin);
-  TH1D* h_rebin = (TH1D*)h_mulbin->Rebin(nnewbin+1, newname, newbin);
+  TH1D* h_rebin = (TH1D*)h_mulbin->Rebin(nnewbin, newname, newbin);
   xjjroot::dividebinwid(h_rebin);
   delete h_mulbin;
   return h_rebin;
