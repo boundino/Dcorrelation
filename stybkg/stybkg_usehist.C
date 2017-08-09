@@ -27,15 +27,18 @@ int stybkg_usehist(TString outfDname, TString outffittpl, TString outplotname, T
   // preparing hists
   TH1D* ahdphi[nhist];
   for(int l=0;l<nhist;l++) ahdphi[l] = (TH1D*)infD->Get(Form("hdphi_%s",histname[l].Data()));
+
   TH1D* hdphi_incl_signal_signal_hist = (TH1D*)ahdphi[1]->Clone("hdphi_incl_signal_signal_hist");
   TH1D* hdphi_incl_signalNswap_signal_hist = (TH1D*)hdphi_incl_signal_signal_hist->Clone("hdphi_incl_signalNswap_signal_hist");
   hdphi_incl_signalNswap_signal_hist->Add(ahdphi[2]);
   TH1D* hdphi_incl_signalNswapNcomb_signal_hist = (TH1D*)hdphi_incl_signalNswap_signal_hist->Clone("hdphi_incl_signalNswapNcomb_signal_hist");
   hdphi_incl_signalNswapNcomb_signal_hist->Add(ahdphi[3]);  
+
   TH1D* hdphi_incl_notmass_signal_norm = (TH1D*)ahdphi[4]->Clone("hdphi_incl_notmass_signal_norm");
   hdphi_incl_notmass_signal_norm->Scale(1./hdphi_incl_notmass_signal_norm->Integral());
   TH1D* hdphi_sideband_all_signal_norm = (TH1D*)ahdphi[5]->Clone("hdphi_sideband_all_signal_norm");
   hdphi_sideband_all_signal_norm->Scale(1./hdphi_sideband_all_signal_norm->Integral());
+
   TH1D* hdphi_incl_signal_signal_norm = (TH1D*)ahdphi[1]->Clone("hdphi_incl_signal_signal_norm");
   hdphi_incl_signal_signal_norm->Scale(1./hdphi_incl_signal_signal_norm->Integral());
   TH1D* hdphi_incl_swap_signal_norm = (TH1D*)ahdphi[2]->Clone("hdphi_incl_swap_signal_norm");
@@ -43,10 +46,20 @@ int stybkg_usehist(TString outfDname, TString outffittpl, TString outplotname, T
   TH1D* hdphi_incl_comb_signal_norm = (TH1D*)ahdphi[3]->Clone("hdphi_incl_comb_signal_norm");
   hdphi_incl_comb_signal_norm->Scale(1./hdphi_incl_comb_signal_norm->Integral());
 
+  TH1D* hdphi_sideband_all_signal_scale = (TH1D*)ahdphi[5]->Clone("hdphi_sideband_all_signal_scale");
+  hdphi_sideband_all_signal_scale->Scale(sidebandscale);
+
+  TH1D* hdphi_incl_all_signal_subtract = (TH1D*)ahdphi[0]->Clone("hdphi_incl_all_signal_subtract");
+  hdphi_incl_all_signal_subtract->Add(hdphi_sideband_all_signal_scale, -1);
+
   // all hists are prepared
-  std::vector<TH1D*> ahistdraw = {hdphi_incl_signalNswapNcomb_signal_hist, hdphi_incl_signalNswap_signal_hist, hdphi_incl_signal_signal_hist, ahdphi[0], 
-                                  hdphi_incl_notmass_signal_norm, hdphi_sideband_all_signal_norm,
-                                  hdphi_incl_comb_signal_norm, hdphi_incl_swap_signal_norm, hdphi_incl_signal_signal_norm};
+  std::vector<TH1D*> ahistdraw = 
+    {
+      hdphi_incl_signalNswapNcomb_signal_hist,  hdphi_incl_signalNswap_signal_hist,  hdphi_incl_signal_signal_hist,  
+      ahdphi[0],                                hdphi_incl_notmass_signal_norm,      hdphi_sideband_all_signal_norm,
+      hdphi_incl_comb_signal_norm,              hdphi_incl_swap_signal_norm,         hdphi_incl_signal_signal_norm,
+      ahdphi[4],                                hdphi_sideband_all_signal_scale,     hdphi_incl_all_signal_subtract
+    };
   const int nhistdraw = ahistdraw.size();
   Float_t yaxismin = ahistdraw[0]->GetMinimum(), yaxismax = ahistdraw[0]->GetMaximum();
   for(int k=0;k<nhistdraw;k++) 
@@ -64,15 +77,18 @@ int stybkg_usehist(TString outfDname, TString outffittpl, TString outplotname, T
   TH2F* hempty_norm = new TH2F("hempty_norm", ";#Delta#phi (rad);Probability (rad^{-1})", 10, minDphi, maxDphi, 10, 1.e-5, 5.e+2);
   xjjroot::sethempty(hempty_norm);
 
-  Int_t ncanvdraw = 3;
-  TString canvdraw[ncanvdraw]  =  {"xcheck",  "directcomp",  "components"};
-  bool ifnorm[ncanvdraw]       =  {false,     true,          true};
-  bool ifdrawhist[ncanvdraw][nhistdraw] = {
-    {true,   true,   true,   true,   false,  false,  false,  false,  false},
-    {false,  false,  false,  false,  true,   true,   false,  false,  false},
-    {false,  false,  false,  false,  false,  false,  true,   true,   true}
-  };
-
+  TString  canvdraw[]  =  {"xcheck",  "directcompshape",  "components",  "directcomp",  "subtract"};
+  bool     ifnorm[]    =  {false,     true,               true,          false,         false};
+  bool ifdrawhist[][nhistdraw] = 
+    {
+      {true,   true,   true,   true,   false,  false,  false,  false,  false,  false,  false,  false},
+      {false,  false,  false,  false,  true,   true,   false,  false,  false,  false,  false,  false},
+      {false,  false,  false,  false,  false,  false,  true,   true,   true,   false,  false,  false},  
+      {false,  false,  false,  false,  false,  false,  false,  false,  false,  true,   true,   false},
+      {false,  false,  true,   false,  false,  false,  false,  false,  false,  false,  false,  true}
+    };
+  const Int_t ncanvdraw = sizeof(canvdraw)/sizeof(canvdraw[0]);
+  
   //
   for(int i=0;i<ncanvdraw;i++)
     {
