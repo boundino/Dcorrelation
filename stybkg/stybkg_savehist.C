@@ -67,7 +67,7 @@ int stybkg_savehist(TString infname, TString outfname, TString collisionsyst, In
             }          
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
-          if(!dcand.isselected(j) && dcand.Dgen[j]==23333) continue;
+          if(!dcand.isselected(j) && dcand.Dgen[j]!=23333) continue;
           for(int l=0;l<nhist;l++) dphi[l].insert(std::pair<int, double>(j, dcand.Dphi[j]));
         }
 
