@@ -58,10 +58,13 @@ int stybkg_savefittpl(TString infname, TString outfname, TString collisionsyst, 
           if(err_initcutval_ptdep) return 1;
           dcand.settrkcut(leading_trkptmin, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
-          if(dcand.isselected(j) && dcand.Dpt[j]>ptleading /*&& dcand.Dgen[j]==23333*/)
+          if(dcand.isselected(j))
             {
-              jleading = j;
-              ptleading = dcand.Dpt[j];              
+              if(dcand.Dpt[j]>ptleading)
+                {
+                  jleading = j;
+                  ptleading = dcand.Dpt[j];
+                }
             }
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);

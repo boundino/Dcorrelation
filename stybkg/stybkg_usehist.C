@@ -72,7 +72,7 @@ int stybkg_usehist(TString outfDname, TString outffittpl, TString outplotname, T
 
   //  
   // TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, (yaxismin>0?yaxismin:1)*1.e-1, yaxismax*5.e+1);
-  TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, 1.e+2, 5.e+8);
+  TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, 1.e0, 5.e+6);
   xjjroot::sethempty(hempty);
   TH2F* hempty_norm = new TH2F("hempty_norm", ";#Delta#phi (rad);Probability (rad^{-1})", 10, minDphi, maxDphi, 10, 1.e-5, 5.e+2);
   xjjroot::sethempty(hempty_norm);
@@ -85,7 +85,7 @@ int stybkg_usehist(TString outfDname, TString outffittpl, TString outplotname, T
       {false,  false,  false,  false,  true,   true,   false,  false,  false,  false,  false,  false},
       {false,  false,  false,  false,  false,  false,  true,   true,   true,   false,  false,  false},  
       {false,  false,  false,  false,  false,  false,  false,  false,  false,  true,   true,   false},
-      {false,  false,  true,   false,  false,  false,  false,  false,  false,  false,  false,  true}
+      {false,  false,  true,   true,   false,  false,  false,  false,  false,  false,  false,  true}
     };
   const Int_t ncanvdraw = sizeof(canvdraw)/sizeof(canvdraw[0]);
   
