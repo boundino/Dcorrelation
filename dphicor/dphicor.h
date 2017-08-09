@@ -20,7 +20,9 @@ Double_t dmass_sideband_h = 0.12;
 
 const int nPtBins = 10;
 Double_t ptBins[nPtBins+1] = {2, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
-const int nDphiBins_fine = 20; // 50
+const int nDphiBins_fine = 11; // 20
+Double_t fphiBins_fine[nDphiBins_fine+1] = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+Double_t dphiBins_fine[nDphiBins_fine+1];
 Double_t minDphi = 0;
 Double_t maxDphi = M_PI;
 const int nDphiBins = 11;
@@ -38,7 +40,7 @@ std::map<TString, xjjroot::thgrstyle> histstyle = {
   {"hdphi_all_signal",             xjjroot::thgrstyle(-1,                           -1,  -1,   kAzure-6,                     1,  2,  kAzure-5,  -1,  1001,  "hist")},  //  blue
   {"hdphi_all_all_fit",            xjjroot::thgrstyle(kOrange,                      20,  1.1,  kOrange,                      1,  1,  -1,        -1,  -1,    "pe")},    //  yellow
   {"hdphi_signal_signal",          xjjroot::thgrstyle(-1,                           -1,  -1,   kGreen+3,                     1,  2,  kGreen-5,  -1,  1001,  "hist")},  //  green
-  {"hdphi_subtract_signal_rebin",  xjjroot::thgrstyle(TColor::GetColor("#ff8faf"),  20,  1.1,  TColor::GetColor("#ff8faf"),  1,  1,  -1,        -1,  -1,    "pe")},    //  pink
+  {"hdphi_subtract_signal",  xjjroot::thgrstyle(TColor::GetColor("#ff8faf"),  20,  1.1,  TColor::GetColor("#ff8faf"),  1,  1,  -1,        -1,  -1,    "pe")},    //  pink
   {"hdphi_subtract_all_fit",       xjjroot::thgrstyle(TColor::GetColor("#ed5e5e"),  20,  1.1,  TColor::GetColor("#ed5e5e"),  1,  1,  -1,        -1,  -1,    "pe")}     //  red
 };
 
@@ -47,7 +49,7 @@ std::map<TString, TString> histleg = {
   {"hdphi_all_signal",             "all D_{lead}, g-mat D"}, 
   {"hdphi_all_all_fit",            "all D_{lead}, fit D"}, 
   {"hdphi_signal_signal",          "g-mat D_{lead}, g-mat D"}, 
-  {"hdphi_subtract_signal_rebin",  "bkgsub D_{lead}, g-mat D"}, 
+  {"hdphi_subtract_signal",  "bkgsub D_{lead}, g-mat D"}, 
   {"hdphi_subtract_all_fit",       "bkgsub D_{lead}, fit D"}
 };
 //
@@ -115,6 +117,8 @@ void initbinning()
   // for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
   dphiBins[0] = minDphi;
   for(int i=1;i<=nDphiBins;i++) dphiBins[i] = dphiBins[i-1]+fphiBins[i]*(maxDphi-minDphi);
+  dphiBins_fine[0] = minDphi;
+  for(int i=1;i<=nDphiBins_fine;i++) dphiBins_fine[i] = dphiBins_fine[i-1]+fphiBins_fine[i]*(maxDphi-minDphi);
 }
 
 TH1D* rebindiffhist(const TH1D* h, Int_t nnewbin, Double_t* newbin, TString newname)

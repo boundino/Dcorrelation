@@ -62,18 +62,20 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   ahdphi_fit[4]->Scale(sidebandscale);
 
   TH1D* hdphi_subtract_all_fit = (TH1D*)ahdphi_fit[0]->Clone("hdphi_subtract_all_fit");
-  hdphi_subtract_all_fit->Add(ahdphi_fit[4], -1.);
+  hdphi_subtract_all_fit->Add(ahdphi_fit[4], -1);
   
-  // TH1D* hdphi_subtract_signal = (TH1D*)ahdphi[1]->Clone("hdphi_subtract_signal");
-  // hdphi_subtract_signal->Add(ahdphi[5], -1.);  
+  TH1D* hdphi_subtract_signal = (TH1D*)ahdphi[1]->Clone("hdphi_subtract_signal");
+  hdphi_subtract_signal->Add(ahdphi[5], -1);  
 
+  /*
   TH1D* hdphi_all_signal_rebin = rebindiffhist(ahdphi[1], nDphiBins, dphiBins, "hdphi_all_signal_rebin");
   TH1D* hdphi_sideband_signal_rebin = rebindiffhist(ahdphi[5], nDphiBins, dphiBins, "hdphi_sideband_signal_rebin");
   TH1D* hdphi_subtract_signal_rebin = (TH1D*)hdphi_all_signal_rebin->Clone("hdphi_subtract_signal_rebin");
   hdphi_subtract_signal_rebin->Add(hdphi_sideband_signal_rebin, -1.);
+  */
 
   // all hists are prepared
-  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi[3], ahdphi_fit[0], hdphi_subtract_signal_rebin, hdphi_subtract_all_fit};
+  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi[3], ahdphi_fit[0], hdphi_subtract_signal, hdphi_subtract_all_fit};
   const int nhistdraw = ahistdraw.size();
   Float_t yaxismin = ahistdraw[0]->GetMinimum(), yaxismax = ahistdraw[0]->GetMaximum();
   for(int k=0;k<nhistdraw;k++) 
@@ -90,13 +92,14 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
 
   Int_t ncanvdraw = 4;
   TString canvdraw[ncanvdraw] = {"base", "bkgsub", "fitext", "final"};
-  bool ifdrawhist[ncanvdraw][nhistdraw] = {
-    {true,  true,  true,  false,  false,  false},
-    {true,  true,  true,  false,  true,   false},
-    {true,  true,  true,  true,   false,  false},
-    {true,  true,  true,  false,  false,  true}
-  };
-
+  bool ifdrawhist[ncanvdraw][nhistdraw] = 
+    {
+      {true,  true,  true,  false,  false,  false},
+      {true,  true,  true,  false,  true,   false},
+      {true,  true,  true,  true,   false,  false},
+      {true,  true,  true,  false,  false,  true}
+    };
+  
   //
   for(int i=0;i<ncanvdraw;i++)
     {

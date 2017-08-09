@@ -28,7 +28,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
   TH1D* ahmass[nhist][nDphiBins];
   for(int l=0;l<nhist;l++) 
     {
-      ahdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins_fine, 0, M_PI);
+      ahdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins_fine, dphiBins_fine);
       ahmassLD[l] = new TH1D(Form("hmassLD_%s",histname[l].Data()), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
       for(int i=0;i<nDphiBins;i++) ahmass[l][i] = new TH1D(Form("hmass_%s_%d",histname[l].Data(),i), ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
     }
@@ -82,9 +82,15 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
       // fill dphi
       if(jleading<0) continue;
       hmassLD->Fill(dcand.Dmass[jleading]);
-      Bool_t leadingsel[nhist] = {true, true, 
-                                  dcand.Dgen[jleading]==23333, dcand.Dgen[jleading]==23333, 
-                                  TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h, TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h};
+      Bool_t leadingsel[nhist] = 
+        {
+          true, 
+          true, 
+          dcand.Dgen[jleading]==23333, 
+          dcand.Dgen[jleading]==23333, 
+          TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h, 
+          TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h
+        };
       for(int l=0;l<nhist;l++)
         {
           if(!leadingsel[l]) continue;

@@ -1,14 +1,14 @@
 #!/bin/bash
-# dophicor.sh #
+# dodphicor.sh #
 
 # -1: loop all bins
 jCOLSYST=0
 lLEAD=-1
 kOTHER=-1
 #
-DO_DPHICOR_SAVEFITTPL=0
-DO_DPHICOR_SAVEHIST=${1:-0}
-DO_DPHICOR_USEHIST=${2:-0}
+DO_DPHICOR_SAVEFITTPL=${1:-0}
+DO_DPHICOR_SAVEHIST=${2:-0}
+DO_DPHICOR_USEHIST=${3:-0}
 
 # nCOL loop
 COLSYST=('pp' 'pp' 'PbPb' 'PbPb')
