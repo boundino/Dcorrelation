@@ -34,9 +34,9 @@ TString histname[nhist] = {"incl_all_signal", "incl_signal_signal", "incl_swap_s
 
 //
 std::map<TString, xjjroot::thgrstyle> histstyle = {
-  {"hdphi_incl_signal_signal_hist",            xjjroot::thgrstyle(-1,         -1,  -1,   kOrange-2,  1,  2,  kOrange-3,  -1,  1001,  "hist")},  
-  {"hdphi_incl_signalNswap_signal_hist",       xjjroot::thgrstyle(-1,         -1,  -1,   kGreen-2,   1,  2,  kGreen+3,   -1,  1001,  "hist")},  
-  {"hdphi_incl_signalNswapNcomb_signal_hist",  xjjroot::thgrstyle(-1,         -1,  -1,   kAzure+5,   1,  2,  kAzure+3,   -1,  1001,  "hist")},  
+  {"hdphi_incl_signal_signal_hist",            xjjroot::thgrstyle(-1,         -1,  -1,   kOrange-3,  1,  2,  kOrange-2,  -1,  1001,  "hist")},  
+  {"hdphi_incl_signalNswap_signal_hist",       xjjroot::thgrstyle(-1,         -1,  -1,   kGreen+3,   1,  2,  kGreen-2,   -1,  1001,  "hist")},  
+  {"hdphi_incl_signalNswapNcomb_signal_hist",  xjjroot::thgrstyle(-1,         -1,  -1,   kAzure+3,   1,  2,  kAzure+5,   -1,  1001,  "hist")},  
   {"hdphi_incl_all_signal",                    xjjroot::thgrstyle(kBlack,     20,  1.1,  kBlack,     1,  1,  -1,         -1,  -1,    "pe")},
   {"hdphi_incl_notmass_signal_norm",           xjjroot::thgrstyle(kCyan+3,    20,  1.1,  kCyan+3,    1,  1,  -1,         -1,  -1,    "pe")},
   {"hdphi_sideband_all_signal_norm",           xjjroot::thgrstyle(kViolet+8,  20,  1.1,  kViolet+8,  1,  1,  -1,         -1,  -1,    "pe")},

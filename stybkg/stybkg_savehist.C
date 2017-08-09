@@ -26,7 +26,7 @@ int stybkg_savehist(TString infname, TString outfname, TString collisionsyst, In
   TH1D* ahdphi[nhist];
   for(int l=0;l<nhist;l++) 
     {
-      ahdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins, );
+      ahdphi[l] = new TH1D(Form("hdphi_%s",histname[l].Data()), ";#Delta#phi (rad);Entries (rad^{-1})", nDphiBins, dphiBins);
     }
   TH1D* hmassLD = new TH1D("hmassLD", ";m_{#piK} (GeV/c^{2});Entries / (5 MeV/c^{2})", 60, 1.7, 2.0);
   
@@ -85,7 +85,6 @@ int stybkg_savehist(TString infname, TString outfname, TString collisionsyst, In
       for(int l=0;l<nhist;l++)
         {
           if(!leadingsel[l]) continue;
-          ahmassLD[l]->Fill(dcand.Dmass[jleading]);
           if(dphi[l].empty()) continue;
           for(std::map<int, double>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
