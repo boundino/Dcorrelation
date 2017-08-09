@@ -92,6 +92,7 @@ public:
   float*           Dtrk2Y;
 
   float*           Dgen;
+  int*             DgenIndex;
 
   int              Gsize;
   int*             GpdgId;
@@ -201,6 +202,7 @@ void readD::init()
   Dtrk2Y = new float[MAX_ND];
 
   Dgen = new float[MAX_ND];
+  DgenIndex = new int[MAX_ND];
 
   GpdgId = new int[MAX_NG];
   GisSignal = new int[MAX_NG];
@@ -283,6 +285,7 @@ void readD::setbranchesaddress(TTree* nt, TTree* ntGen, TTree* ntHi)
   setbranchaddress(nt,    "Dtrk1Y",           Dtrk1Y);
   setbranchaddress(nt,    "Dtrk2Y",           Dtrk2Y);
   setbranchaddress(nt,    "Dgen",             Dgen);
+  setbranchaddress(nt,    "DgenIndex",        DgenIndex);
 
   // ntGen
   setbranchaddress(ntGen, "Gsize",            &Gsize);
