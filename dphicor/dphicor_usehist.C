@@ -67,15 +67,17 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   TH1D* hdphi_subtract_signal = (TH1D*)ahdphi[1]->Clone("hdphi_subtract_signal");
   hdphi_subtract_signal->Add(ahdphi[5], -1);  
 
-  /*
-  TH1D* hdphi_all_signal_rebin = rebindiffhist(ahdphi[1], nDphiBins, dphiBins, "hdphi_all_signal_rebin");
-  TH1D* hdphi_sideband_signal_rebin = rebindiffhist(ahdphi[5], nDphiBins, dphiBins, "hdphi_sideband_signal_rebin");
-  TH1D* hdphi_subtract_signal_rebin = (TH1D*)hdphi_all_signal_rebin->Clone("hdphi_subtract_signal_rebin");
-  hdphi_subtract_signal_rebin->Add(hdphi_sideband_signal_rebin, -1.);
-  */
+  TH1D* hdphi_all_all_hist = (TH1D*)ahdphi[0]->Clone("hdphi_all_all_hist");
+  TH1D* hdphi_all_signal_hist = (TH1D*)ahdphi[1]->Clone("hdphi_all_signal_hist");
+  TH1D* hdphi_signal_signal_hist = (TH1D*)ahdphi[3]->Clone("hdphi_signal_signal_hist");
 
   // all hists are prepared
-  std::vector<TH1D*> ahistdraw = {ahdphi[0], ahdphi[1], ahdphi[3], ahdphi_fit[0], hdphi_subtract_signal, hdphi_subtract_all_fit};
+  std::vector<TH1D*> ahistdraw = 
+    {
+      hdphi_all_all_hist, hdphi_all_signal_hist, hdphi_signal_signal_hist, 
+      ahdphi[0], ahdphi[1], ahdphi[3], 
+      ahdphi_fit[0], hdphi_subtract_signal, hdphi_subtract_all_fit
+    };
   const int nhistdraw = ahistdraw.size();
   Float_t yaxismin = ahistdraw[0]->GetMinimum(), yaxismax = ahistdraw[0]->GetMaximum();
   for(int k=0;k<nhistdraw;k++) 
@@ -94,10 +96,10 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   TString canvdraw[ncanvdraw] = {"base", "bkgsub", "fitext", "final"};
   bool ifdrawhist[ncanvdraw][nhistdraw] = 
     {
-      {true,  true,  true,  false,  false,  false},
-      {true,  true,  true,  false,  true,   false},
-      {true,  true,  true,  true,   false,  false},
-      {true,  true,  true,  false,  false,  true}
+      {true,  true,  true,  true,  true,  true,  false,  false,  false},
+      {true,  true,  true,  true,  true,  true,  false,  true,   false},
+      {true,  true,  true,  true,  true,  true,  true,   false,  false},
+      {true,  true,  true,  true,  true,  true,  false,  false,  true}
     };
   
   //
@@ -111,6 +113,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
         {
           if(!ifdrawhist[i][k]) continue;
           ahistdraw[k]->Draw(Form("%s same", histstyle.at(ahistdraw[k]->GetName()).GetOption().Data()));
+          if(histstyle.at(ahistdraw[k]->GetName()).GetOption().Contains("hist")) continue;
           n_objects++;
         }
       TLegend* leg = new TLegend(0.55, 0.88-0.06*n_objects, 0.82, 0.88, NULL, "brNDC");
@@ -118,6 +121,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
         {
           if(!ifdrawhist[i][k]) continue;
           if(histleg.find(ahistdraw[k]->GetName())==histleg.end()) return 1;
+          if(histstyle.at(ahistdraw[k]->GetName()).GetOption().Contains("hist")) continue;
           TString legopt = histstyle.at(ahistdraw[k]->GetName()).GetOption().Contains("hist")?"f":"p";
           leg->AddEntry(ahistdraw[k], histleg.at(ahistdraw[k]->GetName()), legopt.Data());
         }
