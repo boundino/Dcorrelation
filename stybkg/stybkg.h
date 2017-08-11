@@ -14,6 +14,11 @@ const int MAX_XB = 20000;
 const int MAX_GEN = 6000;
 const double MASS_DZERO = 1.8649;
 
+const Double_t n_hist_dzero = 60;
+const Double_t min_hist_dzero = 1.7;
+const Double_t max_hist_dzero = 2.0;
+const Double_t binwid_hist_dzero = (max_hist_dzero-min_hist_dzero)/n_hist_dzero;
+
 //
 Double_t dmass_sideband_l = 0.07;
 Double_t dmass_sideband_h = 0.12;
@@ -28,8 +33,8 @@ Double_t fphiBins[nDphiBins+1] = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 
 Double_t dphiBins[nDphiBins+1]; 
 const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
-const int nhist = 6;
-TString histname[nhist] = {"incl_all_signal", "incl_signal_signal", "incl_swap_signal", "incl_comb_signal", "incl_notmass_signal", "sideband_all_signal"};
+TString histname[] = {"incl_all_signal", "incl_signal_signal", "incl_swap_signal", "incl_comb_signal", "sideband_all_signal", "sideband_signal_signal", "sideband_swap_signal", "sideband_comb_signal"};
+const int nhist = sizeof(histname)/sizeof(histname[0]);
 // Bool_t  histsave[nhist] = {true,      false,        true,         false,           true,           false};
 
 //
@@ -42,10 +47,10 @@ std::map<TString, xjjroot::thgrstyle> histstyle =
     {"hdphi_incl_signal_signal_norm",            xjjroot::thgrstyle(kOrange-3,  20,  1.1,  kOrange-3,  1,  1,  -1,         -1,  -1,    "pe")},
     {"hdphi_incl_swap_signal_norm",              xjjroot::thgrstyle(kGreen+4,   20,  1.1,  kGreen+4,   1,  1,  -1,         -1,  -1,    "pe")},
     {"hdphi_incl_comb_signal_norm",              xjjroot::thgrstyle(kBlue,      20,  1.1,  kBlue,      1,  1,  -1,         -1,  -1,    "pe")},
-    {"hdphi_incl_notmass_signal_norm",           xjjroot::thgrstyle(kCyan+3,    20,  1.1,  kCyan+3,    1,  1,  -1,         -1,  -1,    "pe")},
-    {"hdphi_sideband_all_signal_norm",           xjjroot::thgrstyle(kViolet+8,  20,  1.1,  kViolet+8,  1,  1,  -1,         -1,  -1,    "pe")},
-    {"hdphi_incl_notmass_signal",                xjjroot::thgrstyle(kCyan+3,    20,  1.1,  kCyan+3,    1,  1,  -1,         -1,  -1,    "pe")},
-    {"hdphi_sideband_all_signal_scale",          xjjroot::thgrstyle(kViolet+8,  20,  1.1,  kViolet+8,  1,  1,  -1,         -1,  -1,    "pe")},
+    {"hdphi_sideband_signalNswap_signal_norm",   xjjroot::thgrstyle(kViolet+8,  20,  1.1,  kViolet+8,  1,  1,  -1,         -1,  -1,    "pe")},
+    {"hdphi_sideband_comb_signal_norm",          xjjroot::thgrstyle(kAzure+3,   20,  1.1,  kAzure+3,   1,  1,  -1,         -1,  -1,    "pe")},
+    {"hdphi_incl_signalNswap_signal_norm_hist",  xjjroot::thgrstyle(-1,         -1,  -1,   kViolet+8,  1,  2,  kViolet-9,  -1,  1001,  "hist")},
+    {"hdphi_incl_comb_signal_norm_hist",         xjjroot::thgrstyle(-1,         20,  1.1,  kAzure+3,   1,  2,  kAzure+5,   -1,  1001,  "hist")},
     {"hdphi_incl_all_signal_subtract",           xjjroot::thgrstyle(kRed+1,     20,  1.1,  kRed+1,     1,  1,  -1,         -1,  -1,    "pe")}
   };
 
@@ -58,10 +63,10 @@ std::map<TString, TString> histleg =
     {"hdphi_incl_signal_signal_norm",            "signal D_{lead}"},
     {"hdphi_incl_swap_signal_norm",              "swap D_{lead}"},
     {"hdphi_incl_comb_signal_norm",              "comb D_{lead}"},
-    {"hdphi_incl_notmass_signal_norm",           "bkg D_{lead}"},
-    {"hdphi_sideband_all_signal_norm",           "sideband D_{lead}"},
-    {"hdphi_incl_notmass_signal",                "bkg D_{lead}"},
-    {"hdphi_sideband_all_signal_scale",          "scaled sideband D_{lead}"},
+    {"hdphi_sideband_signalNswap_signal_norm",   "sideband signal D_{lead}"},
+    {"hdphi_sideband_comb_signal_norm",          "sideband bkg D_{lead}"},
+    {"hdphi_incl_signalNswap_signal_norm_hist",  "all signal D_{lead}"},
+    {"hdphi_incl_comb_signal_norm_hist",         "all bkg D_{lead}"},
     {"hdphi_incl_all_signal_subtract",           "bkgsub D_{lead}"}
   };
 

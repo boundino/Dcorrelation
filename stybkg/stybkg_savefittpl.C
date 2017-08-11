@@ -78,10 +78,13 @@ int stybkg_savefittpl(TString infname, TString outfname, TString collisionsyst, 
         {
           double deltaphi = TMath::Abs(it->second - dphi.at(jleading));
           double filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
-          if(it->first==jleading) continue;
+          if(it->first==jleading || dcand.Dpt[it->first]==ptleading) continue;
           int idphi = xjjc::findibin(&dphiBins, filldeltaphi);
           if(idphi<0) return 1;
-          if(dcand.Dgen[it->first]==23333) hmassSignal[idphi]->Fill(dcand.Dmass[it->first]);
+          if(dcand.Dgen[it->first]==23333) 
+            {
+              hmassSignal[idphi]->Fill(dcand.Dmass[it->first]);
+            }
           if(dcand.Dgen[it->first]==23344) hmassSwapped[idphi]->Fill(dcand.Dmass[it->first]);
         }
     }
