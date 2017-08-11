@@ -61,7 +61,7 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(err_initcutval_ptdep) return 1;
           dcand.settrkcut(leading_trkptmin, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
-          if(dcand.isselected(j) && dcand.Dmass[j] > 1.7 && dcand.Dmass[j] < 2.0)
+          if(dcand.isselected(j))
             {
               if(dcand.Dpt[j]>ptleading)
                 {
@@ -81,15 +81,16 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
         }
       // fill dphi
       if(jleading<0) continue;
+      if(!(dcand.Dmass[jleading] > 1.7 && dcand.Dmass[jleading] < 2.0)) continue;
       hmassLD->Fill(dcand.Dmass[jleading]);
       Bool_t leadingsel[nhist] = 
         {
           true, 
-          true, 
-          dcand.Dgen[jleading]==23333, 
-          dcand.Dgen[jleading]==23333, 
-          TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h, 
-          TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h
+          true,
+          (dcand.Dgen[jleading]==23333 || dcand.Dgen[jleading]==23344), 
+          (dcand.Dgen[jleading]==23333 || dcand.Dgen[jleading]==23344),  
+          (TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h), 
+          (TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h)
         };
       for(int l=0;l<nhist;l++)
         {
@@ -98,9 +99,9 @@ int dphicor_savehist(TString infname, TString outfname, TString collisionsyst, I
           if(dphi[l].empty()) continue;
           for(std::map<int, double>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
-              if(it->first==jleading) continue;
+              if(it->first==jleading || dcand.Dpt[it->first]==ptleading) continue;
               double deltaphi = TMath::Abs(it->second - dcand.Dphi[jleading]);
-              double filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);              
+              double filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);
               ahdphi[l]->Fill(filldeltaphi);
               if(!histsave[l]) continue;
               int idphi = xjjc::findibin(&dphiBins, filldeltaphi);

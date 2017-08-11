@@ -22,7 +22,15 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
                                  "|y^{D_{lead}}| < 1",
                                  TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())};
   dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_%s",outplotname.Data()), vtexLD);
-  Float_t sidebandscale = dftLD->GetFun_not_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH()) / (dftLD->GetFun_f()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_f()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h));
+  Double_t N_s_total = dftLD->GetFun_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH()) + dftLD->GetFun_swap()->Integral(dftLD->GetMassL(), dftLD->GetMassH());
+  Double_t N_s_sideband = dftLD->GetFun_mass()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_mass()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h) +
+    dftLD->GetFun_swap()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_swap()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h);
+  Double_t N_b_total = dftLD->GetFun_background()->Integral(dftLD->GetMassL(), dftLD->GetMassH());
+  Double_t N_b_sideband = dftLD->GetFun_background()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_background()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h);
+  Double_t scalefactor = 1./(1-(N_s_sideband/N_s_total)*(N_b_total/N_b_sideband));
+  std::cout<<scalefactor<<std::endl;
+
+  // Float_t sidebandscale = dftLD->GetFun_not_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH()) / (dftLD->GetFun_f()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_f()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h));
 
   // 
   TH1D* ahdphi[nhist];
@@ -57,15 +65,11 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
     }
   for(int l=0;l<nhist;l++) xjjroot::dividebinwid(ahdphi_fit[l]);
 
-  ahdphi[4]->Scale(sidebandscale);
-  ahdphi[5]->Scale(sidebandscale);
-  ahdphi_fit[4]->Scale(sidebandscale);
-
   TH1D* hdphi_subtract_all_fit = (TH1D*)ahdphi_fit[0]->Clone("hdphi_subtract_all_fit");
-  hdphi_subtract_all_fit->Add(ahdphi_fit[4], -1);
+  hdphi_subtract_all_fit->Add(ahdphi_fit[0], ahdphi_fit[4], scalefactor, -(N_b_total/N_b_sideband)*scalefactor);
   
   TH1D* hdphi_subtract_signal = (TH1D*)ahdphi[1]->Clone("hdphi_subtract_signal");
-  hdphi_subtract_signal->Add(ahdphi[5], -1);  
+  hdphi_subtract_signal->Add(ahdphi[1], ahdphi[5], scalefactor, -(N_b_total/N_b_sideband)*scalefactor);  
 
   TH1D* hdphi_all_all_hist = (TH1D*)ahdphi[0]->Clone("hdphi_all_all_hist");
   TH1D* hdphi_all_signal_hist = (TH1D*)ahdphi[1]->Clone("hdphi_all_signal_hist");
