@@ -98,7 +98,7 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   const Int_t ncanvdraw = sizeof(canvdraw)/sizeof(canvdraw[0]);
   bool ifdrawhist[ncanvdraw][nhistdraw] = 
     {
-      {true,  false,  false,  true,   false,  false,  false,  false,  true},
+      {true,  false,  false,  true,   false,  false,  true,  false,  true},
       {true,  true,   true,   true,   true,   true,   false,  false,  false},
       {true,  true,   true,   true,   true,   true,   false,  true,   false},
       {true,  true,   true,   true,   true,   true,   true,   false,  false},

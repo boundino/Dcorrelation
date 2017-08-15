@@ -13,7 +13,7 @@
 
 TString histname[] = {"all_all", "all_signal", "signal_all", "signal_signal", "sideband_all", "sideband_signal"};
 const int nhist = sizeof(histname)/sizeof(histname[0]);
-Bool_t  histsave[nhist] = {true,      false,        true,         false,           true,           false};
+Bool_t  histsave[nhist] = {true,      false,        false,         false,           true,           false};
 
 //
 std::map<TString, xjjroot::thgrstyle> histstyle = 
