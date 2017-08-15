@@ -30,8 +30,6 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   Double_t scalefactor = 1./(1-(N_s_sideband/N_s_total)*(N_b_total/N_b_sideband));
   std::cout<<scalefactor<<std::endl;
 
-  // Float_t sidebandscale = dftLD->GetFun_not_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH()) / (dftLD->GetFun_f()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + dftLD->GetFun_f()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h));
-
   // 
   TH1D* ahdphi[nhist];
   for(int l=0;l<nhist;l++) ahdphi[l] = (TH1D*)infD->Get(Form("hdphi_%s",histname[l].Data()));
@@ -96,19 +94,21 @@ int dphicor_usehist(TString outfDname, TString outffittpl, TString outplotname, 
   TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, (yaxismin>0?yaxismin:1)*1.e-1, yaxismax*5.e+1);
   xjjroot::sethempty(hempty);
 
-  Int_t ncanvdraw = 4;
-  TString canvdraw[ncanvdraw] = {"base", "bkgsub", "fitext", "final"};
+  TString canvdraw[] = {"data", "base", "bkgsub", "fitext", "final"};
+  const Int_t ncanvdraw = sizeof(canvdraw)/sizeof(canvdraw[0]);
   bool ifdrawhist[ncanvdraw][nhistdraw] = 
     {
-      {true,  true,  true,  true,  true,  true,  false,  false,  false},
-      {true,  true,  true,  true,  true,  true,  false,  true,   false},
-      {true,  true,  true,  true,  true,  true,  true,   false,  false},
-      {true,  true,  true,  true,  true,  true,  false,  false,  true}
+      {true,  false,  false,  true,   false,  false,  false,  false,  true},
+      {true,  true,   true,   true,   true,   true,   false,  false,  false},
+      {true,  true,   true,   true,   true,   true,   false,  true,   false},
+      {true,  true,   true,   true,   true,   true,   true,   false,  false},
+      {true,  true,   true,   true,   true,   true,   false,  false,  true}
     };
   
   //
   for(int i=0;i<ncanvdraw;i++)
     {
+      if(!isMC && i) continue;
       TCanvas* cdphi = new TCanvas("cdphi","",600,600);
       cdphi->SetLogy();
       hempty->Draw();
