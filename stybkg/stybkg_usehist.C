@@ -141,6 +141,8 @@ int stybkg_usehist(TString outfDname, TString outffittpl, TString outplotname, T
       delete cdphi;
     }
 
+  std::cout<<hdphi_incl_all_signal_subtract->GetBinContent(1)<<" "<<hdphi_incl_all_signal_subtract->GetBinError(1)<<std::endl;  
+
   //
 
   return 0;
