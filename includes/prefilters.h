@@ -23,7 +23,7 @@ const int nPtBins = 10;
 Double_t ptBins[nPtBins+1] = {0, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
 Double_t minDphi = 0;
 Double_t maxDphi = M_PI;
-const int nDphiBins_fine = 20;
+const int nDphiBins_fine = 11;
 Double_t fphiBins_fine[nDphiBins_fine+1] = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
 Double_t dphiBins_fine[nDphiBins_fine+1]; 
 const int nDphiBins = 11;
