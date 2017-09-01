@@ -1,44 +1,60 @@
 #!/bin/bash
 # dodphicor.sh #
 
-# -1: loop all bins
-jCOLSYST=-1
-lLEAD=-1
-kOTHER=2
-#
-DO_DPHICOR_SAVEFITTPL=${1:-0}
+DO_DPHICOR_SAVETPL=${1:-0}
 DO_DPHICOR_SAVEHIST=${2:-0}
 DO_DPHICOR_USEHIST=${3:-0}
+DO_DPHICOR_PLOTHIST=${4:-0}
+
+# Select the systems the macros run on
+jCOLSYST=(0 1 2 3)
+lLEAD=(0)
+kOTHER=(2)
+
+##
 
 # nCOL loop
 COLSYST=('pp' 'pp' 'PbPb' 'PbPb')
 ISMC=(1 0 1 0)
-NEEDFITTPL=(1 0 1 0)
+
 # nLEAD loop
 LEADING_TRKPTMIN=(1)
 LEADING_PTMIN=(20)
+
 # nOTHER loop
 OTHER_PTMIN=(0 1 2)
 
-INPUTDNAME=("/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20170427_DfinderMC_pp_20170427_D0_dPt0tkPt0p1_Pythia8_prompt_D0pt0p0_pp502_TuneCUETP8M1_pthatweight.root"
-    # "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
-    "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160330_HeavyFlavor_DfinderData_pp_20160329_dPt0tkPt1_D0Dstar3p5p_goldenjson.root"
-    "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
-    "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160405_HIHardProbes_DfinderData_PbPb_20160402_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON.root"
+# dataset[nCOL]
+INPUTDNAME=(
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20170427_DfinderMC_pp_20170427_D0_dPt0tkPt0p1_Pythia8_prompt_D0pt0p0_pp502_TuneCUETP8M1_pthatweight.root'
+    # '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root'
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160330_HeavyFlavor_DfinderData_pp_20160329_dPt0tkPt1_D0Dstar3p5p_goldenjson.root'
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root'
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160405_HIHardProbes_DfinderData_PbPb_20160402_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON.root'
 )
-INPUTSNAME=("/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20170427_DfinderMC_pp_20170427_D0_dPt0tkPt0p1_Pythia8_prompt_D0pt0p0_pp502_TuneCUETP8M1_pthatweight.root"
-    # "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
-    "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
-    "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
-    "/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root"
+INPUTSNAME=(
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20170427_DfinderMC_pp_20170427_D0_dPt0tkPt0p1_Pythia8_prompt_D0pt0p0_pp502_TuneCUETP8M1_pthatweight.root'
+    # '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root'
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_pp_20160502_dPt0tkPt0p5_D0Dstar_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root'
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root'
+    '/export/d00/scratch/jwang/DntupleRunII/ntD_EvtBase_20160513_DfinderMC_PbPb_20160502_dPt1tkPt0p5_D0_prompt_Dpt2Dy1p1tkPt0p7tkEta2Decay2p9Dalpha0p14Skim_pthatweight.root'
 )
 
 # Do not touch the macros below if you don't know what they mean #
-##
+
+[[ $DO_DPHICOR_SAVETPL -eq 0 && $DO_DPHICOR_SAVEHIST -eq 0 && $DO_DPHICOR_USEHIST -eq 0 && $DO_DPHICOR_PLOTHIST -eq 0 ]] && echo "./dodphicor.sh [DO_DPHICOR_SAVETPL] [DO_DPHICOR_SAVEHIST] [DO_DPHICOR_USEHIST]"
+
+#
 nCOL=${#COLSYST[@]}
 nLEAD=${#LEADING_TRKPTMIN[@]}
 nOTHER=${#OTHER_PTMIN[@]}
-TMC=("data" "MC")
+
+#
+NC='\033[0m'
+FUNCOLOR='\033[1;33m'
+ARGCOLOR='\033[1;32m'
+ERRCOLOR='\033[1;31m'
+tMC=('data' 'MC')
 
 #
 FOLDERS=("rootfiles" "plots" "plotfits")
@@ -51,14 +67,11 @@ do
 done
 
 #
-NC='\033[0m'
-
-#
 function float_to_string()
 {
     if [[ $# -ne 1 ]]
     then
-        echo -e "\033[1;31merror:${NC} invalid argument number - float_to_string()"
+        echo -e "${ERRCOLOR}error:${NC} invalid argument number - float_to_string()"
         return 1
     fi
     part1=`echo $1 | awk -F "." '{print $1}'`
@@ -67,133 +80,77 @@ function float_to_string()
     echo $rt_float_to_string
 }
 
-function run_this_bin() 
-{
-    if [[ $# -ne 2 ]]
-    then
-        echo -e "\033[1;31merror:${NC} invalid argument number - run_this_bin()"
-        return 1
-    fi
-    rt_run_this_bin=0
-    if [ $1 -eq $2 ] || [ $2 -eq -1 ]
-    then
-        rt_run_this_bin=1
-    fi
-    echo $rt_run_this_bin
-}
-
 ##
 
-# dphicor_savefittpl.C #
-if [ $DO_DPHICOR_SAVEFITTPL -eq 1 ]
-then
-    g++ dphicor_savefittpl.C $(root-config --cflags --libs) -g -o dphicor_savefittpl.exe || return 1
-    j=0
-    while ((j<$nCOL))
-    do
-        if [ $(run_this_bin $j $jCOLSYST) -eq 1 ] && [ ${NEEDFITTPL[j]} -eq 1 ]
-        then
-            l=0
-            while ((l<$nLEAD))
-            do
-                if [ $(run_this_bin $l $lLEAD) -eq 1 ]
-                then
-                    k=0
-                    while ((k<$nOTHER))
-                    do
-                        if [ $(run_this_bin $k $kOTHER) -eq 1 ]
-                        then
-                            TEND=DCOR_${COLSYST[j]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
-                            echo -e "-- Processing \033[1;33mdphicor_savefittpl.C${NC}, \033[1;32m${COLSYST[j]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[l]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[k]} GeV${NC}"
-                            set -x
-                            ./dphicor_savefittpl.exe "${INPUTSNAME[j]}" "rootfiles/ffittpl_${TEND}" "${COLSYST[j]}" ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]}
-                            set +x
-                            echo
-                        fi
-                        k=$(($k+1))
-                    done
-                fi
-                l=$(($l+1))
-            done
-        fi
-        j=$(($j+1))
-    done
-    rm dphicor_savefittpl.exe
-fi
+# dphicor_savetpl.C + dphicor_savehist.C #
+g++ dphicor_savetpl.C $(root-config --cflags --libs) -g -o dphicor_savetpl.exe || return 1
+g++ dphicor_savehist.C $(root-config --cflags --libs) -g -o dphicor_savehist.exe || return 1
 
-# dphicor_savehist.C #
-if [ $DO_DPHICOR_SAVEHIST -eq 1 ]
-then
-    g++ dphicor_savehist.C $(root-config --cflags --libs) -g -o dphicor_savehist.exe || return 1
-    j=0
-    while ((j<$nCOL))
+for j in ${jCOLSYST[@]}
+do
+    for l in ${lLEAD[@]}
     do
-        if [ $(run_this_bin $j $jCOLSYST) -eq 1 ]
-        then
-            l=0
-            while ((l<$nLEAD))
-            do
-                if [ $(run_this_bin $l $lLEAD) -eq 1 ]
-                then
-                    k=0
-                    while ((k<$nOTHER))
-                    do
-                        if [ $(run_this_bin $k $kOTHER) -eq 1 ]
-                        then
-                            TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
-                            echo -e "-- Processing \033[1;33mdphicor_savehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[l]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[k]} GeV${NC}"
-                            set -x
-                            ./dphicor_savehist.exe "${INPUTDNAME[j]}" "rootfiles/fdphi_${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]}
-                            set +x
-                            echo
-                        fi
-                        k=$(($k+1))
-                    done
-                fi
-                l=$(($l+1))
-            done
-        fi
-        j=$(($j+1))
+        for k in ${kOTHER[@]}
+        do
+            tPOSTFIX=DCOR_${COLSYST[j]}_${tMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
+            if [ $DO_DPHICOR_SAVETPL -eq 1 ]
+            then
+                echo -e "-- Processing ${FUNCOLOR}dphicor_savetpl.C${NC} :: ${ARGCOLOR}${COLSYST[j]}${NC} - ${ARGCOLOR}${tMC[${ISMC[j]}]}${NC}"
+                ./dphicor_savetpl.exe ${INPUTSNAME[j]} rootfiles/ftpl_${tPOSTFIX} ${COLSYST[j]} ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]} &
+                echo
+            fi
+            if [ $DO_DPHICOR_SAVEHIST -eq 1 ]
+            then
+                echo -e "-- Processing ${FUNCOLOR}dphicor_savehist.C${NC} :: ${ARGCOLOR}${COLSYST[j]}${NC} - ${ARGCOLOR}${tMC[${ISMC[j]}]}${NC}"
+                ./dphicor_savehist.exe ${INPUTDNAME[j]} rootfiles/fhist_${tPOSTFIX} ${COLSYST[j]} ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]} &
+                echo
+            fi
+        done
     done
-    rm dphicor_savehist.exe
-fi
+done
+
+wait
+rm dphicor_savehist.exe
+rm dphicor_savetpl.exe
 
 # dphicor_usehist.C #
+g++ dphicor_usehist.C $(root-config --cflags --libs) -g -o dphicor_usehist.exe || return 1
 if [ $DO_DPHICOR_USEHIST -eq 1 ]
 then
-    g++ dphicor_usehist.C $(root-config --cflags --libs) -g -o dphicor_usehist.exe || return 1
-    j=0
-    while ((j<$nCOL))
+    for j in ${jCOLSYST[@]}
     do
-        if [ $(run_this_bin $j $jCOLSYST) -eq 1 ]
-        then
-            l=0
-            while ((l<$nLEAD))
+        for l in ${lLEAD[@]}
+        do
+            for k in ${kOTHER[@]}
             do
-                if [ $(run_this_bin $l $lLEAD) -eq 1 ]
-                then
-                    k=0
-                    while ((k<$nOTHER))
-                    do
-                        if [ $(run_this_bin $k $kOTHER) -eq 1 ]
-                        then
-                            TEND=DCOR_${COLSYST[j]}_${TMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
-                            FITTEND=DCOR_${COLSYST[j]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
-                            echo -e "-- Processing \033[1;33mdphicor_usehist.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${TMC[${ISMC[j]}]}${NC}, leading pT \033[1;32m> ${LEADING_PTMIN[l]} GeV${NC}, other pT \033[1;32m> ${OTHER_PTMIN[k]} GeV${NC}"
-                            set -x
-                            ./dphicor_usehist.exe "rootfiles/fdphi_${TEND}" "rootfiles/ffittpl_${FITTEND}" "${TEND}" "${COLSYST[j]}" ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]}
-                            set +x
-                            echo
-                        fi
-                        k=$(($k+1))
-                    done
-                fi
-                l=$(($l+1))
+                tPOSTFIX=DCOR_${COLSYST[j]}_${tMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
+                echo -e "-- Processing ${FUNCOLOR}dphicor_usehist.C${NC} :: ${ARGCOLOR}${COLSYST[j]}${NC} - ${ARGCOLOR}${tMC[${ISMC[j]}]}${NC}"
+                ./dphicor_usehist.exe rootfiles/fhist_${tPOSTFIX} rootfiles/ftpl_${tPOSTFIX} rootfiles/fdphi_${tPOSTFIX} ${tPOSTFIX} ${COLSYST[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]}
+                echo
             done
-        fi
-        j=$(($j+1))
+        done
     done
-    rm dphicor_usehist.exe
 fi
+rm dphicor_usehist.exe
+
+# dphicor_plothist.C #
+g++ dphicor_plothist.C $(root-config --cflags --libs) -g -o dphicor_plothist.exe || return 1
+if [ $DO_DPHICOR_PLOTHIST -eq 1 ]
+then
+    for j in ${jCOLSYST[@]}
+    do
+        for l in ${lLEAD[@]}
+        do
+            for k in ${kOTHER[@]}
+            do
+                tPOSTFIX=DCOR_${COLSYST[j]}_${tMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
+                echo -e "-- Processing ${FUNCOLOR}dphicor_plothist.C${NC} :: ${ARGCOLOR}${COLSYST[j]}${NC} - ${ARGCOLOR}${tMC[${ISMC[j]}]}${NC}"
+                ./dphicor_plothist.exe rootfiles/fdphi_${tPOSTFIX} ${tPOSTFIX} ${COLSYST[j]} ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]}
+                echo
+            done
+        done
+    done
+fi
+rm dphicor_plothist.exe
 
 

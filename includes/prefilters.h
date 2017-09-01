@@ -6,6 +6,25 @@
 #include <iostream>
 #include <TString.h>
 
+//
+Double_t dmass_sideband_l = 0.07;
+Double_t dmass_sideband_h = 0.12;
+
+std::vector<Double_t> ptBins = {0, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
+const int nPtBins = ptBins.size()-1;
+
+Double_t minDphi = 0;
+Double_t maxDphi = M_PI;
+const int nDphiBins = 11;
+std::vector<Double_t> fphiBins = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+std::vector<Double_t> dphiBins; 
+
+const int nCoBins = 2;
+std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
+
+TString tMC[] = {"data", "MC"};
+
+//
 const int MAX_XB = 20000;
 const int MAX_GEN = 6000;
 const double MASS_DZERO = 1.8649;
@@ -16,36 +35,16 @@ const Double_t max_hist_dzero = 2.0;
 const Double_t binwid_hist_dzero = (max_hist_dzero-min_hist_dzero)/n_hist_dzero;
 
 //
-Double_t dmass_sideband_l = 0.07;
-Double_t dmass_sideband_h = 0.12;
+std::vector<std::vector<Double_t>> cutval_list_trkPt    = {std::vector<Double_t>{0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5},   std::vector<Double_t>{0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5}};
+std::vector<std::vector<Double_t>> cutval_list_trkEta   = {std::vector<Double_t>{1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5},   std::vector<Double_t>{1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5}};
+std::vector<std::vector<Double_t>> cutval_list_trkPtErr = {std::vector<Double_t>{0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3},   std::vector<Double_t>{0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3}};
+std::vector<std::vector<Double_t>> cutval_list_Dy       = {std::vector<Double_t>{1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0},   std::vector<Double_t>{1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0}};
+std::vector<std::vector<Double_t>> cutval_list_Dalpha   = {std::vector<Double_t>{0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12},  std::vector<Double_t>{0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12}};
+std::vector<std::vector<Double_t>> cutval_list_Dsvpv    = {std::vector<Double_t>{4.62,  4.80,  4.63,  4.53,  4.09,  4.02,  3.66,  3.70,  3.53,  3.00},  std::vector<Double_t>{4.62,  4.80,  4.63,  4.53,  4.09,  4.02,  3.66,  3.70,  3.53,  3.00}};
+std::vector<std::vector<Double_t>> cutval_list_Dchi2cl  = {std::vector<Double_t>{0.161, 0.197, 0.141, 0.172, 0.120, 0.098, 0.099, 0.084, 0.047, 0.050}, std::vector<Double_t>{0.161, 0.197, 0.141, 0.172, 0.120, 0.098, 0.099, 0.084, 0.047, 0.050}};
 
-const int nPtBins = 10;
-Double_t ptBins[nPtBins+1] = {0, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
-Double_t minDphi = 0;
-Double_t maxDphi = M_PI;
-const int nDphiBins_fine = 11;
-Double_t fphiBins_fine[nDphiBins_fine+1] = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-Double_t dphiBins_fine[nDphiBins_fine+1]; 
-const int nDphiBins = 11;
-Double_t fphiBins[nDphiBins+1] = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
-Double_t dphiBins[nDphiBins+1]; 
-const int nCoBins = 2;
-std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
-
-//
-std::vector<TString> cutval_list_skim_pp = {"pBeamScrapingFilter", "pPAprimaryVertexFilter"};
-std::vector<TString> cutval_list_skim_PbPb = {"pclusterCompatibilityFilter", "pprimaryVertexFilter", "phfCoincFilter3"};
-
-Double_t cutval_list_trkPt[nCoBins][nPtBins]    = {{0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5},   {0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5}};
-Double_t cutval_list_trkEta[nCoBins][nPtBins]   = {{1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5},   {1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5}};
-Double_t cutval_list_trkPtErr[nCoBins][nPtBins] = {{0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3},   {0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3}};
-Double_t cutval_list_Dy[nCoBins][nPtBins]       = {{1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0},   {1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0}};
-Double_t cutval_list_Dalpha[nCoBins][nPtBins]   = {{0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12},  {0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12,  0.12}};
-Double_t cutval_list_Dsvpv[nCoBins][nPtBins]    = {{4.62,  4.80,  4.63,  4.53,  4.09,  4.02,  3.66,  3.70,  3.53,  3.00},  {4.62,  4.80,  4.63,  4.53,  4.09,  4.02,  3.66,  3.70,  3.53,  3.00}};
-Double_t cutval_list_Dchi2cl[nCoBins][nPtBins]  = {{0.161, 0.197, 0.141, 0.172, 0.120, 0.098, 0.099, 0.084, 0.047, 0.050}, {0.161, 0.197, 0.141, 0.172, 0.120, 0.098, 0.099, 0.084, 0.047, 0.050}};
-
-TString cutval_list_hlt[nCoBins] = {"HLT_DmesonPPTrackingGlobal_Dpt15_v1", "HLT_HIDmesonHITrackingGlobal_Dpt20_v1"};
-std::vector<TString> cutval_list_skim[nCoBins] = {cutval_list_skim_pp, cutval_list_skim_PbPb};
+std::vector<std::vector<TString>> cutval_list_hlt       = {std::vector<TString>{"HLT_DmesonPPTrackingGlobal_Dpt15_v1"},                                 std::vector<TString>{"HLT_HIDmesonHITrackingGlobal_Dpt20_v1"}};
+std::vector<std::vector<TString>> cutval_list_skim      = {std::vector<TString>{"pBeamScrapingFilter", "pPAprimaryVertexFilter"},                       std::vector<TString>{"pclusterCompatibilityFilter", "pprimaryVertexFilter", "phfCoincFilter3"}};
 
 /* ----- */
 Double_t cutval_trkPt;
@@ -55,8 +54,9 @@ Double_t cutval_Dy;
 Double_t cutval_Dsvpv;
 Double_t cutval_Dalpha;
 Double_t cutval_Dchi2cl;
-TString  cutval_hlt;
+std::vector<TString> cutval_hlt;
 std::vector<TString> cutval_skim;
+Int_t npass;
 
 //
 
@@ -70,6 +70,7 @@ int initcutval(TString collisionsyst)
   int icollsyst = collsyst_list[collisionsyst];
   cutval_hlt = cutval_list_hlt[icollsyst];
   cutval_skim = cutval_list_skim[icollsyst];
+  return 0;
 }
 
 int initcutval_ptdep(TString collisionsyst, int ipt)
@@ -82,23 +83,32 @@ int initcutval_ptdep(TString collisionsyst, int ipt)
   if(ipt<0 || ipt>=nPtBins) return 2;
 
   int icollsyst = collsyst_list[collisionsyst];
-  cutval_trkPt = cutval_list_trkPt[icollsyst][ipt];
-  cutval_trkEta = cutval_list_trkEta[icollsyst][ipt];
-  cutval_trkPtErr = cutval_list_trkPtErr[icollsyst][ipt];
-  cutval_Dy = cutval_list_Dy[icollsyst][ipt];
-  cutval_Dsvpv = cutval_list_Dsvpv[icollsyst][ipt];
-  cutval_Dalpha = cutval_list_Dalpha[icollsyst][ipt];
-  cutval_Dchi2cl = cutval_list_Dchi2cl[icollsyst][ipt];
+  cutval_trkPt = cutval_list_trkPt[icollsyst].at(ipt);
+  cutval_trkEta = cutval_list_trkEta[icollsyst].at(ipt);
+  cutval_trkPtErr = cutval_list_trkPtErr[icollsyst].at(ipt);
+  cutval_Dy = cutval_list_Dy[icollsyst].at(ipt);
+  cutval_Dsvpv = cutval_list_Dsvpv[icollsyst].at(ipt);
+  cutval_Dalpha = cutval_list_Dalpha[icollsyst].at(ipt);
+  cutval_Dchi2cl = cutval_list_Dchi2cl[icollsyst].at(ipt);
   return 0;
 }
 
-void initbinning()
+int initbinning()
 {
-  // for(int i=0;i<=nDphiBins;i++) dphiBins[i] = minDphi+i*(maxDphi-minDphi)/nDphiBins;
-  dphiBins[0] = minDphi;
-  for(int i=1;i<=nDphiBins;i++) dphiBins[i] = dphiBins[i-1]+fphiBins[i]*(maxDphi-minDphi);
-  dphiBins_fine[0] = minDphi;
-  for(int i=1;i<=nDphiBins_fine;i++) dphiBins_fine[i] = dphiBins_fine[i-1]+fphiBins_fine[i]*(maxDphi-minDphi);
+  if(nDphiBins!=fphiBins.size()-1)
+    {
+      std::cout<<"\033[1;31merror:\033[0m \"fphiBins.size()\" is not consistent with \"nDphiBins\"."<<std::endl;
+      return 1;
+    }
+
+  Double_t frac = 0;
+  for(int i=0;i<=nDphiBins;i++) dphiBins.push_back((frac=frac+fphiBins[i])*(maxDphi-minDphi));
+  if(nDphiBins!=dphiBins.size()-1)
+    {
+      std::cout<<"\033[1;31merror:\033[0m \"dphiBins.size()\" is not consistent with \"nDphiBins\"."<<std::endl;
+      return 1;
+    }
+  return 0;
 }
 
 #endif

@@ -8,7 +8,7 @@ namespace xjjroot
   class thgrstyle
   {
   public:
-    thgrstyle(Color_t mcolor=-1, Style_t mstyle=-1, Size_t msize=-1, Color_t lcolor=-1, Style_t lstyle=-1, Width_t lwidth=-1, Color_t fcolor=-1, Float_t falpha=-1, Style_t fstyle=-1, TString opt="")
+    thgrstyle(Color_t mcolor=-1, Style_t mstyle=-1, Size_t msize=-1, Color_t lcolor=-1, Style_t lstyle=-1, Width_t lwidth=-1, Color_t fcolor=-1, Float_t falpha=-1, Style_t fstyle=-1, std::vector<TString> opt=std::vector<TString>(1,""))
       : m_mcolor(mcolor)
       , m_mstyle(mstyle)
       , m_msize(msize)
@@ -30,7 +30,7 @@ namespace xjjroot
     Color_t GetFillColor() const {return m_fcolor;}
     Float_t GetFillAlpha() const {return m_falpha;}
     Style_t GetFillStyle() const {return m_fstyle;}
-    TString GetOption() const {return m_opt;}
+    std::vector<TString> GetOption() const {return m_opt;}
   private:
     Color_t m_mcolor;
     Style_t m_mstyle;
@@ -41,7 +41,7 @@ namespace xjjroot
     Color_t m_fcolor;
     Float_t m_falpha;
     Style_t m_fstyle;
-    TString m_opt;
+    std::vector<TString> m_opt;
   };
   
   template <class T> void setthgrstyle(T* h, const thgrstyle &sty);
