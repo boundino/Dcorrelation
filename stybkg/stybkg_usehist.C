@@ -8,7 +8,6 @@ void stybkg_usehist(TString infhistname, TString inftplname, TString outfname, T
   if(arguerr(collisionsyst)) return;
 
   if(initbinning()) return;
-  if(createhists("usehist")) return;
 
   TFile* infS = new TFile(Form("%s.root",inftplname.Data()));
   TFile* infD = new TFile(Form("%s.root",infhistname.Data()));

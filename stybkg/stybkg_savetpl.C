@@ -63,6 +63,12 @@ void stybkg_savetpl(TString infname, TString outfname,
               ptleading = dcand.Dpt[j];              
             }
         }
+
+      //
+      if(jleading<0) continue;
+      if(!(dcand.Dmass[jleading] > 1.7 && dcand.Dmass[jleading] < 2.0)) continue;
+      if(dcand.Dgen[jleading]==23333) hmassSignalLD->Fill(dcand.Dmass[jleading]);
+      if(dcand.Dgen[jleading]==23344) hmassSwappedLD->Fill(dcand.Dmass[jleading]);
     }
   std::cout<<std::setiosflags(std::ios::left)<<"  Processed "<<"\033[1;31m"<<nentries<<"\033[0m event(s)."<<"   >>   stybkg_savetpl("<<std::setw(30)<<Form("%s)",collisionsyst.Data())<<std::endl;
   std::cout<<std::endl;
