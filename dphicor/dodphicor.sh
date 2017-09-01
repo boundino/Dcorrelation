@@ -42,7 +42,7 @@ INPUTSNAME=(
 
 # Do not touch the macros below if you don't know what they mean #
 
-[[ $DO_DPHICOR_SAVETPL -eq 0 && $DO_DPHICOR_SAVEHIST -eq 0 && $DO_DPHICOR_USEHIST -eq 0 && $DO_DPHICOR_PLOTHIST -eq 0 ]] && echo "./dodphicor.sh [DO_DPHICOR_SAVETPL] [DO_DPHICOR_SAVEHIST] [DO_DPHICOR_USEHIST]"
+[[ $DO_DPHICOR_SAVETPL -eq 0 && $DO_DPHICOR_SAVEHIST -eq 0 && $DO_DPHICOR_USEHIST -eq 0 && $DO_DPHICOR_PLOTHIST -eq 0 ]] && echo "./dodphicor.sh [DO_DPHICOR_SAVETPL] [DO_DPHICOR_SAVEHIST] [DO_DPHICOR_USEHIST] [DO_DPHICOR_PLOTHIST]"
 
 #
 nCOL=${#COLSYST[@]}
@@ -60,7 +60,7 @@ tMC=('data' 'MC')
 FOLDERS=("rootfiles" "plots" "plotfits")
 for i in ${FOLDERS[@]}
 do
-    if [ ! -d $i ]
+    if [[ ! -d $i ]]
     then
         mkdir -p $i
     fi
@@ -85,7 +85,6 @@ function float_to_string()
 # dphicor_savetpl.C + dphicor_savehist.C #
 g++ dphicor_savetpl.C $(root-config --cflags --libs) -g -o dphicor_savetpl.exe || return 1
 g++ dphicor_savehist.C $(root-config --cflags --libs) -g -o dphicor_savehist.exe || return 1
-
 for j in ${jCOLSYST[@]}
 do
     for l in ${lLEAD[@]}
@@ -93,13 +92,13 @@ do
         for k in ${kOTHER[@]}
         do
             tPOSTFIX=DCOR_${COLSYST[j]}_${tMC[${ISMC[j]}]}_leadingDptmin_$(float_to_string ${LEADING_PTMIN[l]})_otherDptmin_$(float_to_string ${OTHER_PTMIN[k]})_leadingtrkptmin_$(float_to_string ${LEADING_TRKPTMIN[l]})
-            if [ $DO_DPHICOR_SAVETPL -eq 1 ]
+            if [[ $DO_DPHICOR_SAVETPL -eq 1 ]]
             then
                 echo -e "-- Processing ${FUNCOLOR}dphicor_savetpl.C${NC} :: ${ARGCOLOR}${COLSYST[j]}${NC} - ${ARGCOLOR}${tMC[${ISMC[j]}]}${NC}"
                 ./dphicor_savetpl.exe ${INPUTSNAME[j]} rootfiles/ftpl_${tPOSTFIX} ${COLSYST[j]} ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]} &
                 echo
             fi
-            if [ $DO_DPHICOR_SAVEHIST -eq 1 ]
+            if [[ $DO_DPHICOR_SAVEHIST -eq 1 ]]
             then
                 echo -e "-- Processing ${FUNCOLOR}dphicor_savehist.C${NC} :: ${ARGCOLOR}${COLSYST[j]}${NC} - ${ARGCOLOR}${tMC[${ISMC[j]}]}${NC}"
                 ./dphicor_savehist.exe ${INPUTDNAME[j]} rootfiles/fhist_${tPOSTFIX} ${COLSYST[j]} ${ISMC[j]} ${LEADING_PTMIN[l]} ${OTHER_PTMIN[k]} ${LEADING_TRKPTMIN[l]} &
@@ -108,14 +107,13 @@ do
         done
     done
 done
-
 wait
 rm dphicor_savehist.exe
 rm dphicor_savetpl.exe
 
 # dphicor_usehist.C #
 g++ dphicor_usehist.C $(root-config --cflags --libs) -g -o dphicor_usehist.exe || return 1
-if [ $DO_DPHICOR_USEHIST -eq 1 ]
+if [[ $DO_DPHICOR_USEHIST -eq 1 ]]
 then
     for j in ${jCOLSYST[@]}
     do

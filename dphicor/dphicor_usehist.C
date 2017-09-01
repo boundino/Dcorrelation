@@ -15,10 +15,6 @@ void dphicor_usehist(TString infhistname, TString inftplname, TString outfname, 
   if(gethists(std::vector<TFile*>{infS, infD}, "usehist")) return;
 
   //
-  TH1D* hmassSignalLD = (TH1D*)infS->Get("hmassSignalLD");
-  TH1D* hmassSwappedLD = (TH1D*)infS->Get("hmassSwappedLD");
-  TH1D* hmassLD = (TH1D*)infD->Get("hmassLD");
-
   xjjroot::dfitter* dftLD = new xjjroot::dfitter("3SC");
   dftLD->SetTexLinespc(0.009);
   dftLD->SetSidebandL(dmass_sideband_l);
@@ -26,16 +22,18 @@ void dphicor_usehist(TString infhistname, TString inftplname, TString outfname, 
   std::vector<TString> vtexLD = {TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
                                  "|y^{D_{lead}}| < 1",
                                  TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())};
-  dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_%s",outplotname.Data()), vtexLD);
-  Double_t N_s_total    = dftLD->GetFun_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH()) + 
-    dftLD->GetFun_swap()->Integral(dftLD->GetMassL(), dftLD->GetMassH());
-  Double_t N_s_sideband = dftLD->GetFun_mass()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + 
-    dftLD->GetFun_mass()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h) +
-    dftLD->GetFun_swap()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + 
-    dftLD->GetFun_swap()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h);
-  Double_t N_b_total    = dftLD->GetFun_background()->Integral(dftLD->GetMassL(), dftLD->GetMassH());
-  Double_t N_b_sideband = dftLD->GetFun_background()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l) + 
-    dftLD->GetFun_background()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h);
+  dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_LD_%s",outplotname.Data()), vtexLD);
+  Double_t N_signal_total    = dftLD->GetFun_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH())/binwid_hist_dzero;
+  Double_t N_swap_total      = dftLD->GetFun_swap()->Integral(dftLD->GetMassL(), dftLD->GetMassH())/binwid_hist_dzero;
+  Double_t N_comb_total      = dftLD->GetFun_background()->Integral(dftLD->GetMassL(), dftLD->GetMassH())/binwid_hist_dzero;
+  Double_t N_signal_sideband = dftLD->GetFun_mass()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l)/binwid_hist_dzero + dftLD->GetFun_mass()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h)/binwid_hist_dzero;
+  Double_t N_swap_sideband   = dftLD->GetFun_swap()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l)/binwid_hist_dzero + dftLD->GetFun_swap()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h)/binwid_hist_dzero;
+  Double_t N_comb_sideband   = dftLD->GetFun_background()->Integral(MASS_DZERO-dmass_sideband_h, MASS_DZERO-dmass_sideband_l)/binwid_hist_dzero + dftLD->GetFun_background()->Integral(MASS_DZERO+dmass_sideband_l, MASS_DZERO+dmass_sideband_h)/binwid_hist_dzero;
+
+  Double_t N_s_total    = N_signal_total + N_swap_total;
+  Double_t N_s_sideband = N_signal_sideband + N_swap_sideband;
+  Double_t N_b_total    = N_comb_total;
+  Double_t N_b_sideband = N_comb_sideband;
   Double_t scalefactor  = 1./(1-(N_s_sideband/N_s_total)*(N_b_total/N_b_sideband));
   delete dftLD;
 

@@ -20,6 +20,7 @@ void dphicor_plothist(TString infname, TString outplotname,
       std::vector<TString>{"hdphi_all_all_hist", "hdphi_all_signal_hist", "hdphi_signal_signal_hist", "hdphi_all_all", "hdphi_all_signal", "hdphi_signal_signal", "hdphi_all_all_fit"},
       std::vector<TString>{"hdphi_all_all_hist", "hdphi_all_signal_hist", "hdphi_signal_signal_hist", "hdphi_all_all", "hdphi_all_signal", "hdphi_signal_signal", "hdphi_subtract_all_fit"}
     };
+  if(canvdraw.size()!=drawhist.size()) return;
   
   //  
   TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, minDphi, maxDphi, 10, 1.e-1, 1.e+8);
@@ -29,7 +30,7 @@ void dphicor_plothist(TString infname, TString outplotname,
   for(int i=0;i<canvdraw.size();i++)
     {
       if(!isMC && i) continue;
-      TCanvas* cdphi = new TCanvas("cdphi","",600,600);
+      TCanvas* cdphi = new TCanvas("cdphi", "", 600, 600);
       cdphi->SetLogy();
       hempty->Draw();
       Int_t nlegline = 0;

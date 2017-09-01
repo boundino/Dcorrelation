@@ -61,7 +61,6 @@ void dphicor_savehist(TString infname, TString outfname,
             {
               jleading = j;
               ptleading = dcand.Dpt[j];
-
             }          
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
@@ -110,7 +109,7 @@ void dphicor_savehist(TString infname, TString outfname,
             }
         }
     }
-  std::cout<<std::setiosflags(std::ios::left)<<"  Processed "<<"\033[1;31m"<<nentries<<"\033[0m event(s)."<<"   >>   dphicor_savefittpl("<<std::setw(5)<<Form("%s,",collisionsyst.Data())<<" "<<std::setw(30)<<Form("%s)",tMC[isMC].Data())<<std::endl;
+  std::cout<<std::setiosflags(std::ios::left)<<"  Processed "<<"\033[1;31m"<<nentries<<"\033[0m event(s)."<<"   >>   dphicor_savehist("<<std::setw(5)<<Form("%s,",collisionsyst.Data())<<" "<<std::setw(30)<<Form("%s)",tMC[isMC].Data())<<std::endl;
   std::cout<<std::endl;
   
   for(int l=0;l<nhist;l++) 

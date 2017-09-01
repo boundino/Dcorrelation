@@ -22,15 +22,15 @@ std::vector<Bool_t> histsave = {true,      false,        false,         false,  
 std::map<TString, TH1D*> histptr;
 std::map<TString, xjjroot::thgrstyle> histstyle = 
   {
-    {"hdphi_all_all",             xjjroot::thgrstyle(kBlack,                       20,  1.1,  kBlack,                       1,  1,  -1,        -1,  -1,    std::vector<TString>{"p",    "all D_{lead}, all D",      "p"})},        //  black
-    {"hdphi_all_signal",          xjjroot::thgrstyle(kAzure-6,                     20,  1.1,  kAzure-6,                     1,  1,  -1,        -1,  -1,    std::vector<TString>{"p",    "all D_{lead}, g-mat D",    "p"})},      //  blue
-    {"hdphi_signal_signal",       xjjroot::thgrstyle(kGreen+3,                     20,  1.1,  kGreen+3,                     1,  1,  -1,        -1,  -1,    std::vector<TString>{"p",    "g-mat D_{lead}, g-mat D",  "p"})},    //  green
-    {"hdphi_all_all_hist",        xjjroot::thgrstyle(-1,                           -1,  -1,   kBlack,                       1,  2,  kGray+1,   -1,  1001,  std::vector<TString>{"hist", "all D_{lead}, all D",      "f"})},        //  black
-    {"hdphi_all_signal_hist",     xjjroot::thgrstyle(-1,                           -1,  -1,   kAzure-6,                     1,  2,  kAzure-5,  -1,  1001,  std::vector<TString>{"hist", "all D_{lead}, g-mat D",    "f"})},      //  blue
-    {"hdphi_signal_signal_hist",  xjjroot::thgrstyle(-1,                           -1,  -1,   kGreen+3,                     1,  2,  kGreen-5,  -1,  1001,  std::vector<TString>{"hist", "g-mat D_{lead}, g-mat D",  "f"})},    //  green
-    {"hdphi_all_all_fit",         xjjroot::thgrstyle(kOrange,                      20,  1.1,  kOrange,                      1,  1,  -1,        -1,  -1,    std::vector<TString>{"pe",   "all D_{lead}, fit D",      "p"})},        //  yellow
+    {"hdphi_all_all",             xjjroot::thgrstyle(kBlack,                       20,  1.1,  kBlack,                       1,  1,  -1,        -1,  -1,    std::vector<TString>{"p",    "all D_{lead}, all D",      "p"})},   //  black
+    {"hdphi_all_signal",          xjjroot::thgrstyle(kAzure-6,                     20,  1.1,  kAzure-6,                     1,  1,  -1,        -1,  -1,    std::vector<TString>{"p",    "all D_{lead}, g-mat D",    "p"})},   //  blue
+    {"hdphi_signal_signal",       xjjroot::thgrstyle(kGreen+3,                     20,  1.1,  kGreen+3,                     1,  1,  -1,        -1,  -1,    std::vector<TString>{"p",    "g-mat D_{lead}, g-mat D",  "p"})},   //  green
+    {"hdphi_all_all_hist",        xjjroot::thgrstyle(-1,                           -1,  -1,   kBlack,                       1,  2,  kGray+1,   -1,  1001,  std::vector<TString>{"hist", "all D_{lead}, all D",      "f"})},   //  black
+    {"hdphi_all_signal_hist",     xjjroot::thgrstyle(-1,                           -1,  -1,   kAzure-6,                     1,  2,  kAzure-5,  -1,  1001,  std::vector<TString>{"hist", "all D_{lead}, g-mat D",    "f"})},   //  blue
+    {"hdphi_signal_signal_hist",  xjjroot::thgrstyle(-1,                           -1,  -1,   kGreen+3,                     1,  2,  kGreen-5,  -1,  1001,  std::vector<TString>{"hist", "g-mat D_{lead}, g-mat D",  "f"})},   //  green
+    {"hdphi_all_all_fit",         xjjroot::thgrstyle(kOrange,                      20,  1.1,  kOrange,                      1,  1,  -1,        -1,  -1,    std::vector<TString>{"pe",   "all D_{lead}, fit D",      "p"})},   //  yellow
     {"hdphi_subtract_signal",     xjjroot::thgrstyle(TColor::GetColor("#ff8faf"),  20,  1.1,  TColor::GetColor("#ff8faf"),  1,  1,  -1,        -1,  -1,    std::vector<TString>{"pe",   "bkgsub D_{lead}, g-mat D", "p"})},   //  pink
-    {"hdphi_subtract_all_fit",    xjjroot::thgrstyle(TColor::GetColor("#ed5e5e"),  20,  1.1,  TColor::GetColor("#ed5e5e"),  1,  1,  -1,        -1,  -1,    std::vector<TString>{"pe",   "bkgsub D_{lead}, fit D",   "p"})}      //  red
+    {"hdphi_subtract_all_fit",    xjjroot::thgrstyle(TColor::GetColor("#ed5e5e"),  20,  1.1,  TColor::GetColor("#ed5e5e"),  1,  1,  -1,        -1,  -1,    std::vector<TString>{"pe",   "bkgsub D_{lead}, fit D",   "p"})}    //  red
   };
 
 //
