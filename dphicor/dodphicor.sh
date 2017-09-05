@@ -9,7 +9,7 @@ DO_DPHICOR_PLOTHIST=${4:-0}
 # Select the systems the macros run on
 jCOLSYST=(0 1 2 3)
 lLEAD=(0)
-kOTHER=(2)
+kOTHER=(0)
 
 ##
 

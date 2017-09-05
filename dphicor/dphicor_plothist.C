@@ -54,7 +54,7 @@ void dphicor_plothist(TString infname, TString outplotname,
       
       xjjroot::drawCMS(collisionsyst);
       Float_t texypos = 0.91, texxpos = 0.23, texdypos = 0.06;
-      xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
+      // xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
       xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), "|y^{D}| < 1");
       xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
       xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));

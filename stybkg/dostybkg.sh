@@ -9,7 +9,7 @@ DO_STYBKG_PLOTHIST=${3:-0}
 # Select the systems the macros run on
 jCOLSYST=(0 1)
 lLEAD=(0)
-kOTHER=(2)
+kOTHER=(0)
 
 ##
 

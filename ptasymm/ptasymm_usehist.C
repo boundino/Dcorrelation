@@ -19,9 +19,12 @@ void ptasymm_usehist(TString infhistname, TString inftplname, TString outfname, 
   dftLD->SetTexLinespc(0.009);
   dftLD->SetSidebandL(dmass_sideband_l);
   dftLD->SetSidebandH(dmass_sideband_h);
-  std::vector<TString> vtexLD = {TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
-                                 "|y^{D_{lead}}| < 1",
-                                 TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())};
+  std::vector<TString> vtexLD = 
+    {
+      // TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
+      "|y^{D_{lead}}| < 1",
+      TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())
+    };
   dftLD->fit(hmassLD, hmassSignalLD, hmassSwappedLD, collisionsyst, Form("plotfits/cmass_LD_%s",outplotname.Data()), vtexLD);
   Double_t N_signal_total    = dftLD->GetFun_mass()->Integral(dftLD->GetMassL(), dftLD->GetMassH())/binwid_hist_dzero;
   Double_t N_swap_total      = dftLD->GetFun_swap()->Integral(dftLD->GetMassL(), dftLD->GetMassH())/binwid_hist_dzero;
@@ -43,11 +46,14 @@ void ptasymm_usehist(TString infhistname, TString inftplname, TString outfname, 
       if(!histsave[l]) continue;
       for(int i=0;i<nPtasymBins;i++) 
         {
-          std::vector<TString> vtex = {TString::Format("%.1f < p_{T}^{D}_{sub} / p_{T}^{D}_{lead} < %.1f",ptasymBins[i],ptasymBins[i+1]), 
-                                       TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
-                                       "|y^{D}| < 1",
-                                       TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()),
-                                       TString::Format("p_{T}^{D}_{sub} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str())};
+          std::vector<TString> vtex = 
+            {
+              TString::Format("%.1f < p_{T}^{D}_{sub} / p_{T}^{D}_{lead} < %.1f",ptasymBins[i],ptasymBins[i+1]), 
+              // TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
+              "|y^{D}| < 1",
+              TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()),
+              TString::Format("p_{T}^{D}_{sub} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str())
+            };
           xjjroot::dfitter* dft = new xjjroot::dfitter();
           dft->SetSidebandL(dmass_sideband_l);
           dft->SetSidebandH(dmass_sideband_h);

@@ -23,7 +23,7 @@ void ptasymm_plothist(TString infname, TString outplotname,
   if(canvdraw.size()!=drawhist.size()) return;
   
   //  
-  TH2F* hempty = new TH2F("hempty", ";#Delta#phi (rad);Entries (rad^{-1})", 10, ptasymBins[0], ptasymBins[nPtasymBins], 10, 1.e-1, 1.e+8);
+  TH2F* hempty = new TH2F("hempty", ";p_{T}^{sub} / p_{T}^{lead} (GeV/c);Entries (GeV^{-1})", 10, ptasymBins[0], ptasymBins[nPtasymBins], 10, 1.e-1, 1.e+8);
   xjjroot::sethempty(hempty);
 
   //
@@ -54,7 +54,7 @@ void ptasymm_plothist(TString infname, TString outplotname,
       
       xjjroot::drawCMS(collisionsyst);
       Float_t texypos = 0.91, texxpos = 0.23, texdypos = 0.06;
-      xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
+      // xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("|p_{T}^{trk}_{lead D}| > %s GeV/c",xjjc::number_remove_zero(leading_trkptmin).c_str()));
       xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), "|y^{D}| < 1");
       xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()));
       xjjroot::drawtex(texxpos, texypos=(texypos-texdypos), Form("p_{T}^{D}_{sub} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str()));

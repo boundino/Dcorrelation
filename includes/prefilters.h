@@ -22,6 +22,9 @@ std::vector<Double_t> dphiBins;
 const int nCoBins = 2;
 std::map<TString, int> collsyst_list = {{"pp", 0}, {"PbPb", 1}};
 
+std::vector<Double_t> ptasymBins = {0, 0.2, 0.4, 0.6, 0.8, 1};
+const int nPtasymBins = ptasymBins.size()-1;
+
 TString tMC[] = {"data", "MC"};
 
 //

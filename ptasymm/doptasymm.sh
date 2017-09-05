@@ -7,7 +7,7 @@ DO_PTASYMM_USEHIST=${3:-0}
 DO_PTASYMM_PLOTHIST=${4:-0}
 
 # Select the systems the macros run on
-jCOLSYST=(0)
+jCOLSYST=(0 1 2 3)
 lLEAD=(0)
 kOTHER=(0)
 
