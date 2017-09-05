@@ -18,7 +18,7 @@ COLSYST=('pp' 'pp' 'PbPb' 'PbPb')
 ISMC=(1 0 1 0)
 
 # nLEAD loop
-LEADING_TRKPTMIN=(1)
+LEADING_TRKPTMIN=(0)
 LEADING_PTMIN=(20)
 
 # nOTHER loop
