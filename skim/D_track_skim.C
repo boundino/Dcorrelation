@@ -17,7 +17,6 @@
 #include <functional>
 #include <algorithm>
 
-// static const double pi = 3.141592653589793238462643383279502884;
 double getAngleToEP(double angle);
 float getTrkWeight(TrkCorr* trkCorr, int itrk, int hiBin, jetTree* jt_trkcorr, trackTree* tt);
 
@@ -26,20 +25,15 @@ int D_track_skim(std::string input, std::string output,
                  // float trkptmin = 10, 
                  int start = 0, int end = -1) 
 {
-  std::cout<<"test"<<std::endl;
-
   bool isHI = !isPP;
 
-  //
   // CREATE OUTPUT TREE
-  //
   TFile* foutput = new TFile(output.c_str(), "recreate");
 
   TTree* outtree = new TTree("dtrk", "");
   DTrackTree* dtrk = new DTrackTree(outtree);
 
   // OPEN INPUT FILES
-
   TFile* finput = TFile::Open(input.c_str(), "read");
 
 #define _SET_BRANCH_ADDRESS(tree, branch, var) {        \
@@ -124,16 +118,13 @@ int D_track_skim(std::string input, std::string output,
     }
 
   // OPEN CORRECTION FILES
-
   TrkCorr* trkCorr;
   if(isHI)
     trkCorr = new TrkCorr("Corrections/TrkCorr_Jun7_Iterative_PbPb_etaLT2p4/");
   else
     trkCorr = new TrkCorr("Corrections/TrkCorr_July22_Iterative_pp_eta2p4/");
 
-
   // BEGIN EVENT LOOP
-
   int nevents = event_tree->GetEntries();
   for (int j = start; j < nevents; j++) 
     {
@@ -238,7 +229,6 @@ int D_track_skim(std::string input, std::string output,
         }
 
       //
-
       dtrk->isPP = isPP;
       dtrk->hiBin = hiBin;
       dtrk->vz = vz;
