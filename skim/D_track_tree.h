@@ -40,10 +40,10 @@ public:
   void set_hlt_tree(TTree* ht, Bool_t isPP);
 
   void clear_vectors();
-  void copy_variables(DTree dt);
-  void copy_variables_gen(GTree gt);
-  void copy_index(DTree dt, int i);
-  void copy_index_gen(GTree gt, int i);
+  void copy_variables(DTree& dt);
+  void copy_variables_gen(GTree& gt);
+  void copy_index(DTree& dt, int i);
+  void copy_index_gen(GTree& gt, int i);
 
   int isPP;
   uint32_t run;
@@ -257,18 +257,18 @@ void DTrackTree::create_tree(TTree* t)
 
 }
 
-void DTrackTree::copy_variables_gen(GTree gt)
+void DTrackTree::copy_variables_gen(GTree& gt)
 {
   Gsize = gt.Gsize;
 }
 
-void DTrackTree::copy_variables(DTree dt) 
+void DTrackTree::copy_variables(DTree& dt) 
 {
   PVz = dt.PVz;
   Dsize = dt.Dsize;
 }
 
-void DTrackTree::copy_index_gen(GTree gt, int i)
+void DTrackTree::copy_index_gen(GTree& gt, int i)
 {
   Gy.push_back(gt.Gy[i]);
   Geta.push_back(gt.Geta[i]);
@@ -289,7 +289,7 @@ void DTrackTree::copy_index_gen(GTree gt, int i)
   Gtk2phi.push_back(gt.Gtk2phi[i]);
 }
 
-void DTrackTree::copy_index(DTree dt, int i) 
+void DTrackTree::copy_index(DTree& dt, int i) 
 {
   Dindex.push_back(dt.Dindex[i]);
   Dtype.push_back(dt.Dtype[i]);
