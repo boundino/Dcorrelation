@@ -13,10 +13,13 @@ Double_t dmass_sideband_h = 0.12;
 std::vector<Double_t> ptBins = {0, 3, 4, 5, 6, 8, 10, 12.5, 15, 20, 999};
 const int nPtBins = ptBins.size()-1;
 
-Double_t minDphi = 0;
-Double_t maxDphi = M_PI;
-const int nDphiBins = 11;
-std::vector<Double_t> fphiBins = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+// Double_t minDphi = 0;
+// Double_t maxDphi = M_PI;
+// std::vector<Double_t> fphiBins = {0., 0.05, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+Double_t minDphi = -M_PI/2.;
+Double_t maxDphi = 3*M_PI/2.;
+std::vector<Double_t> fphiBins = {0., 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+const int nDphiBins = 10;
 std::vector<Double_t> dphiBins; 
 
 const int nCoBins = 2;
@@ -38,7 +41,7 @@ const Double_t max_hist_dzero = 2.0;
 const Double_t binwid_hist_dzero = (max_hist_dzero-min_hist_dzero)/n_hist_dzero;
 
 //
-std::vector<std::vector<Double_t>> cutval_list_trkPt    = {std::vector<Double_t>{0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5},   std::vector<Double_t>{0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5,   0.5}};
+std::vector<std::vector<Double_t>> cutval_list_trkPt    = {std::vector<Double_t>{0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7},   std::vector<Double_t>{0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7,   0.7}};
 std::vector<std::vector<Double_t>> cutval_list_trkEta   = {std::vector<Double_t>{1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5},   std::vector<Double_t>{1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5,   1.5}};
 std::vector<std::vector<Double_t>> cutval_list_trkPtErr = {std::vector<Double_t>{0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3},   std::vector<Double_t>{0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3,   0.3}};
 std::vector<std::vector<Double_t>> cutval_list_Dy       = {std::vector<Double_t>{1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0},   std::vector<Double_t>{1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0}};
@@ -105,7 +108,7 @@ int initbinning()
     }
 
   Double_t frac = 0;
-  for(int i=0;i<=nDphiBins;i++) dphiBins.push_back((frac=frac+fphiBins[i])*(maxDphi-minDphi));
+  for(int i=0;i<=nDphiBins;i++) dphiBins.push_back(minDphi+(frac=frac+fphiBins[i])*(maxDphi-minDphi));
   if(nDphiBins!=dphiBins.size()-1)
     {
       std::cout<<"\033[1;31merror:\033[0m \"dphiBins.size()\" is not consistent with \"nDphiBins\"."<<std::endl;

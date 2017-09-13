@@ -21,7 +21,7 @@ void dphicor_usehist(TString infhistname, TString inftplname, TString outfname, 
   dftLD->SetSidebandH(dmass_sideband_h);
   std::vector<TString> vtexLD = 
     {
-      // TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
+      TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
       "|y^{D_{lead}}| < 1",
       TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str())
     };
@@ -49,7 +49,7 @@ void dphicor_usehist(TString infhistname, TString inftplname, TString outfname, 
           std::vector<TString> vtex = 
             {
               TString::Format("%.2f < #Delta#phi < %.2f",dphiBins[i],dphiBins[i+1]), 
-              // TString::Format("|p_{T}^{trk}_{lead D}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
+              TString::Format("|p_{T}^{trk}| > %s GeV/c", xjjc::number_remove_zero(leading_trkptmin).c_str()),
               "|y^{D}| < 1",
               TString::Format("p_{T}^{D}_{lead} > %s GeV/c",xjjc::number_remove_zero(leading_ptmin).c_str()),
               TString::Format("p_{T}^{D} > %s GeV/c",xjjc::number_remove_zero(other_ptmin).c_str())

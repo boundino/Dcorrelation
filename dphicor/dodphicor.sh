@@ -18,11 +18,11 @@ COLSYST=('pp' 'pp' 'PbPb' 'PbPb')
 ISMC=(1 0 1 0)
 
 # nLEAD loop
-LEADING_TRKPTMIN=(0)
+LEADING_TRKPTMIN=(0.7)
 LEADING_PTMIN=(20)
 
 # nOTHER loop
-OTHER_PTMIN=(0 1 2)
+OTHER_PTMIN=(2)
 
 # dataset[nCOL]
 INPUTDNAME=(
