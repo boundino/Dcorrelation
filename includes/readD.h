@@ -34,6 +34,7 @@ public:
   int              Dsize;
   float            PVz;
 
+  int*             Dtype;
   float*           Dmass;
   float*           Dpt;
   float*           Deta;
@@ -116,6 +117,7 @@ void readD::init()
   Gsize = -99;
 
   //
+  Dtype = new int[MAX_ND];
   Dmass = new float[MAX_ND];
   Dpt = new float[MAX_ND];
   Deta = new float[MAX_ND];
@@ -171,6 +173,7 @@ void readD::setbranchesaddress(TTree* nt, TTree* ntGen, TTree* ntHi)
   setbranchaddress(nt,    "Dsize",            &Dsize);
   setbranchaddress(nt,    "PVz",              &PVz);
 
+  setbranchaddress(nt,    "Dtype",            Dtype);
   setbranchaddress(nt,    "Dmass",            Dmass);
   setbranchaddress(nt,    "Dpt",              Dpt);
   setbranchaddress(nt,    "Deta",             Deta);

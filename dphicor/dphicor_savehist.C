@@ -99,8 +99,9 @@ void dphicor_savehist(TString infname, TString outfname,
           for(std::map<int, double>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
             {
               if(it->first==jleading || dcand.Dpt[it->first]==ptleading) continue; // skip leading D and swapped cand of leading D
-              double deltaphi = TMath::Abs(it->second - dcand.Dphi[jleading]);
-              double filldeltaphi = deltaphi<M_PI?deltaphi:(2*M_PI-deltaphi);
+              if((dcand.Dtype[jleading]==1 && dcand.Dtype[it->first]==1) || (dcand.Dtype[jleading]==2 && dcand.Dtype[it->first]==2)) continue; // skip DD and DbarDbar
+              double deltaphi = it->second - dcand.Dphi[jleading];
+              double filldeltaphi = deltaphi<-M_PI/2.?(deltaphi+2*M_PI):(deltaphi>3*M_PI/2.?(deltaphi-2*M_PI):deltaphi);
               ahdphi[l]->Fill(filldeltaphi);
               if(!histsave[l]) continue;
               int idphi = xjjc::findibin(dphiBins, filldeltaphi);

@@ -76,11 +76,11 @@ void dphicor_savetpl(TString infname, TString outfname,
       for(std::map<int, double>::iterator it=dphi.begin(); it!=dphi.end(); it++)
         {
           if(it->first==jleading || dcand.Dpt[it->first]==ptleading) continue; // skip leading D and swapped cand of leading D
-          double deltaphi = it->second - dphi.at(jleading);
-          double filldeltaphi = deltaphi>=0?deltaphi:(deltaphi+2*M_PI);
-          filldeltaphi = filldeltaphi<3*M_PI/2.?filldeltaphi:(filldeltaphi-2*M_PI);
+          if((dcand.Dtype[jleading]==1 && dcand.Dtype[it->first]==1) || (dcand.Dtype[jleading]==2 && dcand.Dtype[it->first]==2)) continue; // skip DD and DbarDbar
+          double deltaphi = it->second - dcand.Dphi[jleading];
+          double filldeltaphi = deltaphi<-M_PI/2.?(deltaphi+2*M_PI):(deltaphi>3*M_PI/2.?(deltaphi-2*M_PI):deltaphi);
           int idphi = xjjc::findibin(dphiBins, filldeltaphi);
-          if(idphi<0) {std::cout<<filldeltaphi<<std::endl; return;}
+          if(idphi<0) return;
           if(dcand.Dgen[it->first]==23333) ahmassSignal[idphi]->Fill(dcand.Dmass[it->first]);
           if(dcand.Dgen[it->first]==23344) ahmassSwapped[idphi]->Fill(dcand.Dmass[it->first]);
         }
