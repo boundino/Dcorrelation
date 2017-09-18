@@ -11,7 +11,7 @@ iPTHAT=0
 #
 isMC=1
 isPP=1
-MAXFILENO=3
+MAXFILENO=100000000
 ifCHECKEMPTY=0
 
 #
@@ -30,7 +30,7 @@ OUTPUTSUBDIR="DtrkFiles_20170918_pp_5TeV_TuneCUETP8M1_Dfinder_MC_Pthat${PTHATS[i
 MERGEOUTPUTDIR="/export/d00/scratch/jwang/Dtrk/MC/"
 WORKDIR="/work/$USER/Dtrk/"
 
-#
+##
 OUTPUTDIR="${OUTPUTPRIDIR}/${OUTPUTSUBDIR}"
 LOGDIR="logs/log_${OUTPUTSUBDIR}"
 RESIDUALS="Corrections"
@@ -45,12 +45,6 @@ if [ "$movetosubmit" -eq 1 ]
 then 
     if [[ $(hostname) == "submit-hi2.mit.edu" || $(hostname) == "submit.mit.edu" ]]
     then
-        # rm $WORKDIR/D_track_skim.exe
-        # rm $WORKDIR/${RESIDUALS}.tar.gz
-        # rm $WORKDIR/$0
-        # rm $WORKDIR/skim_dtrk_checkfile.sh
-        # rm $WORKDIR/skim_condor_checkfile.sh
-
         cd ../skim
         g++ D_track_skim.C $(root-config --cflags --libs) -Werror -Wall -O2 -o D_track_skim.exe
         tar -czf ${RESIDUALS}.tar.gz ${RESIDUALS}/
@@ -78,11 +72,17 @@ fi
 
 if [ "$merger" -eq 1 ]
 then
-    return 1
     if [[ $(hostname) == "submit-hi2.mit.edu" ]]
     then
+        if [[ ! -d "$MERGEOUTPUTDIR" ]]
+        then
+            mkdir -p $MERGEOUTPUTDIR
+        fi
+
         rm ${MERGEOUTPUTDIR}/${OUTPUTSUBDIR}.root
-        hadd ${MERGEOUTPUTDIR}/${OUTPUTSUBDIR}.root ${OUTPUTPRIDIR}/${OUTPUTSUBDIR}/*.root
+        cp -r ${OUTPUTPRIDIR}/${OUTPUTSUBDIR} ${MERGEOUTPUTDIR}/
+        hadd ${MERGEOUTPUTDIR}/${OUTPUTSUBDIR}.root ${MERGEOUTPUTDIR}/${OUTPUTSUBDIR}/*.root
+        rm -r ${MERGEOUTPUTDIR}/${OUTPUTSUBDIR}
     else
         echo -e "\e[31;1merror:\e[0m merge files on \e[32;1msubmit-hiX.mit.edu\e[0m."
     fi
