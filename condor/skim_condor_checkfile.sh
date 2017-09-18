@@ -19,7 +19,7 @@ PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 OUTFILE="skim_dtrk"
 
 rm filelist.txt
-ls $DATASET  | awk '{print "" $0}' >> filelist.txt
+ls $DATASET | grep -v "/" | grep -v -e '^[[:space:]]*$' | awk '{print "" $0}' >> filelist.txt
 
 SRM_PREFIX="/mnt/hadoop/"
 SRM_PATH=${DESTINATION#${SRM_PREFIX}}
