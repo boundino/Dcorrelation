@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ $# -ne 7 ]]; then
-    echo "usage: ./skim-condor.sh [input dir] [output dir] [max jobs] [log dir] [isPP] [isMC] [check input empty]"
+if [[ $# -ne 8 ]]; then
+    echo "usage: ./skim-condor.sh [input dir] [output dir] [max jobs] [log dir] [isPP] [isMC] [check input empty] [residuals]"
     exit 1
 fi
 
@@ -9,10 +9,10 @@ DATASET=$1
 DESTINATION=$2
 MAXFILES=$3
 LOGDIR=$4
-# RESIDUALS=$5
 isPP=$5
 isMC=$6
 ifCHECKEMPTY=$7
+RESIDUALS=$8
 
 PROXYFILE=$(ls /tmp/ -lt | grep $USER | grep -m 1 x509 | awk '{print $NF}')
 
@@ -69,7 +69,7 @@ requirements = GLIDEIN_Site == "MIT_CampusFactory" && BOSCOGroup == "bosco_cmshi
 job_lease_duration = 240
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = D_track_skim.exe,/tmp/$PROXYFILE
+transfer_input_files = D_track_skim.exe,/tmp/$PROXYFILE,$RESIDUALS
 
 Queue 
 EOF

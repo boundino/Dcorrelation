@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ $# -ne 6 ]]; then
-    echo "usage: ./skim-djet.sh [input file] [output dir] [output filename] [isPP] [isMC] [proxy]"
+if [[ $# -ne 7 ]]; then
+    echo "usage: ./skim-djet.sh [input file] [output dir] [output filename] [isPP] [isMC] [proxy] [residuals]"
     exit 1
 fi
 
@@ -11,13 +11,12 @@ OUTFILE=$3
 isPP=$4
 isMC=$5
 export X509_USER_PROXY=${PWD}/$6
-# RESIDUALS=$7
+RESIDUALS=$7
 
 SRM_PREFIX="/mnt/hadoop/"
 SRM_PATH=${DESTINATION#${SRM_PREFIX}}
 
-# tar -xzvf $RESIDUALS
-#FILE=$(head -n$(($1+1)) $2 | tail -n1)
+tar -xzf $RESIDUALS
 
 echo ./D_track_skim.exe $INFILE $OUTFILE $isPP $isMC
 ./D_track_skim.exe $INFILE $OUTFILE $isPP $isMC

@@ -44,12 +44,16 @@ then
         # cmsenv
         cd ../skim
         g++ D_track_skim.C $(root-config --cflags --libs) -Werror -Wall -O2 -o D_track_skim.exe
+        tar -czf correction.tar.gz Corrections/
         cd ../condor
-        cp ../skim/D_track_skim.exe $WORKDIR/
+
+        mv ../skim/D_track_skim.exe $WORKDIR/
+        mv ../skim/ correction.tar.gz $WORKDIR/
         cp $0 $WORKDIR/
         cp skim_dtrk_checkfile.sh $WORKDIR/
         cp skim_condor_checkfile.sh $WORKDIR/
         cp ~/grid_setup.sh $WORKDIR/
+
         # cd $WORKDIR/
     else
         echo -e "\e[31;1merror:\e[0m compile macros on \e[32;1msubmit-hiX.mit.edu\e[0m."
@@ -60,7 +64,7 @@ if [ "$runjobs" -eq 1 ]
 then
     if [[ $(hostname) == "submit.mit.edu" ]]
     then
-        ./skim_condor_checkfile.sh $INPUTDIR $OUTPUTDIR $MAXFILENO $LOGDIR $isPP $isMC $ifCHECKEMPTY
+        ./skim_condor_checkfile.sh $INPUTDIR $OUTPUTDIR $MAXFILENO $LOGDIR $isPP $isMC $ifCHECKEMPTY correction.tar.gz
     else
         echo -e "\e[31;1merror:\e[0m submit jobs on \e[32;1msubmit.mit.edu\e[0m."
     fi
