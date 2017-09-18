@@ -26,10 +26,14 @@ DATES=(170907_172052 170908_155109 170908_155559 170908_155644 170908_155726 170
 INPUTDIR="/mnt/hadoop/cms/store/user/wangj/Pythia8_prompt_D0pt0p0_Pthat${PTHATS[iPTHAT]}_pp502_TuneCUETP8M1/crab_HiForestAOD_DfinderMC_pp_20170906_Pthat${PTHATS[iPTHAT]}_dPt0tkPt0p5_Dhadron/${DATES[iPTHAT]}/0000/"
 OUTPUTPRIDIR="/mnt/hadoop/cms/store/user/wangj/condor/Dtrk/"
 OUTPUTSUBDIR="DtrkFiles_20170918_pp_5TeV_TuneCUETP8M1_Dfinder_MC_Pthat${PTHATS[iPTHAT]}_20170906"
-OUTPUTDIR="${OUTPUTPRIDIR}/${OUTPUTSUBDIR}"
-LOGDIR="logs/log_${OUTPUTSUBDIR}"
+
 MERGEOUTPUTDIR="/export/d00/scratch/jwang/Dtrk/MC/"
 WORKDIR="/work/$USER/Dtrk/"
+
+#
+OUTPUTDIR="${OUTPUTPRIDIR}/${OUTPUTSUBDIR}"
+LOGDIR="logs/log_${OUTPUTSUBDIR}"
+RESIDUALS="Corrections"
 
 #
 if [[ ! -d "$WORKDIR" ]]
@@ -39,24 +43,26 @@ fi
 
 if [ "$movetosubmit" -eq 1 ]
 then 
-    if [[ $(hostname) == "submit-hi2.mit.edu" ]]
+    if [[ $(hostname) == "submit-hi2.mit.edu" || $(hostname) == "submit.mit.edu" ]]
     then
-        # cmsenv
+        # rm $WORKDIR/D_track_skim.exe
+        # rm $WORKDIR/${RESIDUALS}.tar.gz
+        # rm $WORKDIR/$0
+        # rm $WORKDIR/skim_dtrk_checkfile.sh
+        # rm $WORKDIR/skim_condor_checkfile.sh
+
         cd ../skim
         g++ D_track_skim.C $(root-config --cflags --libs) -Werror -Wall -O2 -o D_track_skim.exe
-        tar -czf correction.tar.gz Corrections/
+        tar -czf ${RESIDUALS}.tar.gz ${RESIDUALS}/
         cd ../condor
 
         mv ../skim/D_track_skim.exe $WORKDIR/
-        mv ../skim/ correction.tar.gz $WORKDIR/
+        mv ../skim/${RESIDUALS}.tar.gz $WORKDIR/
         cp $0 $WORKDIR/
         cp skim_dtrk_checkfile.sh $WORKDIR/
         cp skim_condor_checkfile.sh $WORKDIR/
-        cp ~/grid_setup.sh $WORKDIR/
-
-        # cd $WORKDIR/
     else
-        echo -e "\e[31;1merror:\e[0m compile macros on \e[32;1msubmit-hiX.mit.edu\e[0m."
+        echo -e "\e[31;1merror:\e[0m compile macros on \e[32;1msubmit-hiX.mit.edu\e[0m or \e[32;1msubmit.mit.edu\e[0m."
     fi
 fi
 
@@ -64,7 +70,7 @@ if [ "$runjobs" -eq 1 ]
 then
     if [[ $(hostname) == "submit.mit.edu" ]]
     then
-        ./skim_condor_checkfile.sh $INPUTDIR $OUTPUTDIR $MAXFILENO $LOGDIR $isPP $isMC $ifCHECKEMPTY correction.tar.gz
+        ./skim_condor_checkfile.sh $INPUTDIR $OUTPUTDIR $MAXFILENO $LOGDIR $isPP $isMC $ifCHECKEMPTY ${RESIDUALS}.tar.gz
     else
         echo -e "\e[31;1merror:\e[0m submit jobs on \e[32;1msubmit.mit.edu\e[0m."
     fi
