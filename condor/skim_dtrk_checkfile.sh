@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -ne 7 ]]; then
-    echo "usage: ./skim-djet.sh [input file] [output dir] [output filename] [isPP] [isMC] [proxy] [residuals]"
+    echo "usage: ./skim_dtrk_checkfile.sh [input file] [output dir] [output filename] [isPP] [isMC] [proxy] [residuals]"
     exit 1
 fi
 

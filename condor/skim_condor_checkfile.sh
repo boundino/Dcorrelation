@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# -ne 8 ]]; then
-    echo "usage: ./skim-condor.sh [input dir] [output dir] [max jobs] [log dir] [isPP] [isMC] [check input empty] [residuals]"
+    echo "usage: ./skim_condor_checkfile.sh [input dir] [output dir] [max jobs] [log dir] [isPP] [isMC] [check input empty] [residuals]"
     exit 1
 fi
 
@@ -58,7 +58,7 @@ Universe     = vanilla
 Initialdir   = $PWD/
 Notification = Error
 Executable   = $PWD/skim_dtrk_checkfile.sh
-Arguments    = $INFILE $DESTINATION ${OUTFILE}_${infn}.root $isPP $isMC $PROXYFILE
+Arguments    = $INFILE $DESTINATION ${OUTFILE}_${infn}.root $isPP $isMC $PROXYFILE $RESIDUALS
 GetEnv       = True
 Output       = $LOGDIR/log-${infn}.out
 Error        = $LOGDIR/log-${infn}.err
