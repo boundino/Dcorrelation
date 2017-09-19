@@ -47,9 +47,10 @@ void dphicor_savehist(TString infname, TString outfname,
       if(TMath::Abs(dcand.PVz)>15) continue;
       
       // 
-      int jleading = -1;
-      double ptleading = 0;
-      std::vector<std::map<int, double>> dphi(nhist);
+      // int jleading = -1;
+      // double ptleading = 0;
+      std::map<double, int> ptleading;
+      std::vector<std::map<double, int>> ptsub(nhist);
       for(int j=0;j<dcand.Dsize;j++)
         {
           int ipt = xjjc::findibin(ptBins, (double)dcand.Dpt[j]);
@@ -57,11 +58,14 @@ void dphicor_savehist(TString infname, TString outfname,
           if(initcutval_ptdep(collisionsyst, ipt)) return;
           dcand.settrkcut(leading_trkptmin, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
-          if(dcand.isselected(j) && dcand.Dpt[j]>ptleading)
+          if(dcand.isselected(j))
             {
-              jleading = j;
-              ptleading = dcand.Dpt[j];
-            }          
+              if(ptleading.find(dcand.Dpt[j])==ptleading.end())
+                {
+                  ptleading.insert(std::pair<double, int>(dcand.Dpt[j], j));
+                }
+              // else std::cout<<"test"<<std::endl;
+            }
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
           if(!dcand.isselected(j)) continue;
@@ -75,38 +79,41 @@ void dphicor_savehist(TString infname, TString outfname,
               dcand.Dgen[j]==23333
             };
           for(int l=0;l<nhist;l++)
-            if(subsel[l]) dphi[l].insert(std::pair<int, double>(j, dcand.Dphi[j]));
+            if(subsel[l]) ptsub[l].insert(std::pair<double, int>(dcand.Dpt[j], j));
         }
-
+      
       // 
-      if(jleading<0) continue;
-      if(!(dcand.Dmass[jleading] > 1.7 && dcand.Dmass[jleading] < 2.0)) continue;
-      hmassLD->Fill(dcand.Dmass[jleading]);
-      std::vector<bool> leadingsel = // [nhist]
+      if(ptleading.empty()) continue;
+      for(std::map<double, int>::iterator itleading=ptleading.begin(); itleading!=ptleading.end(); itleading++)
         {
-          true, 
-          true,
-          (dcand.Dgen[jleading]==23333 || dcand.Dgen[jleading]==23344), 
-          (dcand.Dgen[jleading]==23333 || dcand.Dgen[jleading]==23344),  
-          (TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h), 
-          (TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[jleading]-MASS_DZERO)<dmass_sideband_h)
-        };
-      for(int l=0;l<nhist;l++)
-        {
-          if(!leadingsel[l]) continue;
-          ahmassLD[l]->Fill(dcand.Dmass[jleading]);
-          if(dphi[l].empty()) continue;
-          for(std::map<int, double>::iterator it=dphi[l].begin(); it!=dphi[l].end(); it++)
+          if(!(dcand.Dmass[itleading->second] > 1.7 && dcand.Dmass[itleading->second] < 2.0)) continue;
+          hmassLD->Fill(dcand.Dmass[itleading->second]);
+          std::vector<bool> leadingsel = // [nhist]
             {
-              if(it->first==jleading || dcand.Dpt[it->first]==ptleading) continue; // skip leading D and swapped cand of leading D
-              if((dcand.Dtype[jleading]==1 && dcand.Dtype[it->first]==1) || (dcand.Dtype[jleading]==2 && dcand.Dtype[it->first]==2)) continue; // skip DD and DbarDbar
-              double deltaphi = it->second - dcand.Dphi[jleading];
-              double filldeltaphi = deltaphi<-M_PI/2.?(deltaphi+2*M_PI):(deltaphi>3*M_PI/2.?(deltaphi-2*M_PI):deltaphi);
-              ahdphi[l]->Fill(filldeltaphi);
-              if(!histsave[l]) continue;
-              int idphi = xjjc::findibin(dphiBins, filldeltaphi);
-              if(idphi<0) return;
-              ahmass[l].at(idphi)->Fill(dcand.Dmass[it->first]);
+              true, 
+              true,
+              (dcand.Dgen[itleading->second]==23333 || dcand.Dgen[itleading->second]==23344), 
+              (dcand.Dgen[itleading->second]==23333 || dcand.Dgen[itleading->second]==23344),  
+              (TMath::Abs(dcand.Dmass[itleading->second]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[itleading->second]-MASS_DZERO)<dmass_sideband_h), 
+              (TMath::Abs(dcand.Dmass[itleading->second]-MASS_DZERO)>dmass_sideband_l && TMath::Abs(dcand.Dmass[itleading->second]-MASS_DZERO)<dmass_sideband_h)
+            };
+          for(int l=0;l<nhist;l++)
+            {
+              if(!leadingsel[l]) continue;
+              ahmassLD[l]->Fill(dcand.Dmass[itleading->second]);
+              if(ptsub[l].empty()) continue;
+              for(std::map<double, int>::iterator it=ptsub[l].begin(); it!=ptsub[l].end(); it++)
+                {
+                  if(it->second==itleading->second || it->first==itleading->first) continue; // skip leading D and swapped cand of leading D
+                  // if((dcand.Dtype[jleading]==1 && dcand.Dtype[it->first]==1) || (dcand.Dtype[jleading]==2 && dcand.Dtype[it->first]==2)) continue; // skip DD and DbarDbar
+                  double deltaphi = dcand.Dphi[it->second] - dcand.Dphi[itleading->second];
+                  double filldeltaphi = deltaphi<-M_PI/2.?(deltaphi+2*M_PI):(deltaphi>3*M_PI/2.?(deltaphi-2*M_PI):deltaphi);
+                  ahdphi[l]->Fill(filldeltaphi);
+                  if(!histsave[l]) continue;
+                  int idphi = xjjc::findibin(dphiBins, filldeltaphi);
+                  if(idphi<0) return;
+                  ahmass[l].at(idphi)->Fill(dcand.Dmass[it->second]);
+                }
             }
         }
     }

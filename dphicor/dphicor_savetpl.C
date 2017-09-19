@@ -47,9 +47,8 @@ void dphicor_savetpl(TString infname, TString outfname,
       if(TMath::Abs(dcand.PVz)>15) continue;
 
       // 
-      int jleading = -1;
-      double ptleading = 0;
-      std::map<int, double> dphi;
+      std::map<double, int> ptleading;
+      std::map<double, int> ptsub;
       for(int j=0;j<dcand.Dsize;j++)
         {
           int ipt = xjjc::findibin(ptBins, (double)dcand.Dpt[j]);
@@ -57,32 +56,37 @@ void dphicor_savetpl(TString infname, TString outfname,
           if(initcutval_ptdep(collisionsyst, ipt)) return;
           dcand.settrkcut(leading_trkptmin, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, leading_ptmin);
-          if(dcand.isselected(j) && dcand.Dpt[j]>ptleading/* && dcand.Dgen[j]==23333*/)
+          if(dcand.isselected(j))
             {
-              jleading = j;
-              ptleading = dcand.Dpt[j];              
+              if(ptleading.find(dcand.Dpt[j])==ptleading.end())
+                {
+                  ptleading.insert(std::pair<double, int>(dcand.Dpt[j], j));
+                }
             }
           dcand.settrkcut(cutval_trkPt, cutval_trkEta, cutval_trkPtErr);
           dcand.setDcut(cutval_Dy, cutval_Dsvpv, cutval_Dalpha, cutval_Dchi2cl, other_ptmin);
           if(!dcand.isselected(j)) continue;
-          dphi.insert(std::pair<int, double>(j, dcand.Dphi[j]));
+          ptsub.insert(std::pair<double, int>(dcand.Dpt[j], j));
         }
 
       // 
-      if(jleading<0) continue;
-      if(!(dcand.Dmass[jleading] > 1.7 && dcand.Dmass[jleading] < 2.0)) continue;
-      if(dcand.Dgen[jleading]==23333) hmassSignalLD->Fill(dcand.Dmass[jleading]);
-      if(dcand.Dgen[jleading]==23344) hmassSwappedLD->Fill(dcand.Dmass[jleading]);
-      for(std::map<int, double>::iterator it=dphi.begin(); it!=dphi.end(); it++)
+      if(ptleading.empty()) continue;
+      for(std::map<double, int>::iterator itleading=ptleading.begin(); itleading!=ptleading.end(); itleading++)
         {
-          if(it->first==jleading || dcand.Dpt[it->first]==ptleading) continue; // skip leading D and swapped cand of leading D
-          if((dcand.Dtype[jleading]==1 && dcand.Dtype[it->first]==1) || (dcand.Dtype[jleading]==2 && dcand.Dtype[it->first]==2)) continue; // skip DD and DbarDbar
-          double deltaphi = it->second - dcand.Dphi[jleading];
-          double filldeltaphi = deltaphi<-M_PI/2.?(deltaphi+2*M_PI):(deltaphi>3*M_PI/2.?(deltaphi-2*M_PI):deltaphi);
-          int idphi = xjjc::findibin(dphiBins, filldeltaphi);
-          if(idphi<0) return;
-          if(dcand.Dgen[it->first]==23333) ahmassSignal[idphi]->Fill(dcand.Dmass[it->first]);
-          if(dcand.Dgen[it->first]==23344) ahmassSwapped[idphi]->Fill(dcand.Dmass[it->first]);
+          if(!(dcand.Dmass[itleading->second] > 1.7 && dcand.Dmass[itleading->second] < 2.0)) continue;
+          if(dcand.Dgen[itleading->second]==23333) hmassSignalLD->Fill(dcand.Dmass[itleading->second]);
+          if(dcand.Dgen[itleading->second]==23344) hmassSwappedLD->Fill(dcand.Dmass[itleading->second]);
+          for(std::map<double, int>::iterator it=ptsub.begin(); it!=ptsub.end(); it++)
+            {
+              if(it->second==itleading->second || it->first==itleading->first) continue; // skip leading D and swapped cand of leading D
+              // if((dcand.Dtype[jleading]==1 && dcand.Dtype[it->first]==1) || (dcand.Dtype[jleading]==2 && dcand.Dtype[it->first]==2)) continue; // skip DD and DbarDbar
+              double deltaphi = dcand.Dphi[it->second] - dcand.Dphi[itleading->second];
+              double filldeltaphi = deltaphi<-M_PI/2.?(deltaphi+2*M_PI):(deltaphi>3*M_PI/2.?(deltaphi-2*M_PI):deltaphi);
+              int idphi = xjjc::findibin(dphiBins, filldeltaphi);
+              if(idphi<0) return;
+              if(dcand.Dgen[it->second]==23333) ahmassSignal[idphi]->Fill(dcand.Dmass[it->second]);
+              if(dcand.Dgen[it->second]==23344) ahmassSwapped[idphi]->Fill(dcand.Dmass[it->second]);
+            }
         }
     }
   std::cout<<std::setiosflags(std::ios::left)<<"  Processed "<<"\033[1;31m"<<nentries<<"\033[0m event(s)."<<"   >>   dphicor_savetpl("<<std::setw(5)<<Form("%s,",collisionsyst.Data())<<" "<<std::setw(30)<<Form("%s)",tMC[isMC].Data())<<std::endl;
